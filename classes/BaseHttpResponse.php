@@ -171,11 +171,7 @@ class BaseHttpResponse {
 
     if(!empty($this->output_filters)) {
       foreach($this->output_filters as $key => $value) {
-        if(is_array($value)) {
-          $twig->addFilter($key, new Twig_Filter_Function($value[0] .'::'. $value[1]));
-        } else {
-          $twig->addFilter($key, new Twig_Filter_Function($value));
-        }
+        $twig->addFilter(new Twig_SimpleFilter($key, $value));
       }
     }
 
