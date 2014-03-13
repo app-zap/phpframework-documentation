@@ -1,5 +1,8 @@
 {
   "name": "smichaelsen/phpframework",
+  "require": {
+    "twig/twig": "1.*"
+  },
   "autoload": {
     "files": [
       "classes/BaseAutoLoader.php",
