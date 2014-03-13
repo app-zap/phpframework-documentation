@@ -1,10 +1,8 @@
 <?php
 
-require_once(dirname(__FILE__) . '/classes/BaseAutoloader.php');
-
 /**
  * Main entrance class for the framework / application
- * 
+ *
  * @author Knut Ahlers
  */
 class Dispatcher {
@@ -53,9 +51,9 @@ class Dispatcher {
   public function dispatch($uri) {
     $routes = array();
     require_once(rtrim($this->application_directory, '/') . '/routes.php');
-    
+
     $uri = preg_replace('/\?.*$/', '', $uri);
-    
+
     $responder_class = null;
     $params = array();
     foreach($routes as $regex => $class) {
@@ -65,12 +63,12 @@ class Dispatcher {
         break;
       }
     }
-    
+
     // If the defined class does not match PHP class guidelines throw an exception
     if(!preg_match('/[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*/', $responder_class)) {
       throw new InvalidHttpResponderException('Responder class does not match PHP class naming conventions');
     }
-    
+
     // If the class does not exist throw an exception
     if(class_exists($responder_class, true)) {
       if(php_sapi_name() == 'cli') {
@@ -84,7 +82,7 @@ class Dispatcher {
         , new BaseHttpResponse($this->config, rtrim($this->application_directory, '/') . '/templates/')
         , $this->config
       );
-      
+
       if(method_exists($responder, $method)) {
         $responder->$method($params);
       } else {
@@ -94,7 +92,7 @@ class Dispatcher {
       throw new InvalidHttpResponderException('Handler class ' . $responder_class . ' for uri ' . $uri . ' not found!');
     }
   }
-  
+
 }
 
 class ApplicationPartMissingException extends Exception {}
