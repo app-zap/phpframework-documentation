@@ -1,6 +1,9 @@
 {
   "name": "smichaelsen/phpframework",
   "autoload": {
-    "files": ["classes/BaseAutoLoader.php"]
+    "files": [
+      "classes/BaseAutoLoader.php",
+      "dispatcher.php"
+    ]
   }
 }
