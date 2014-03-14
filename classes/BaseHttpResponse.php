@@ -1,9 +1,7 @@
 <?php
 
-require_once(dirname(__FILE__) . '/../lib/twig/lib/Twig/Autoloader.php');
-
 class BaseHttpResponse {
-  
+
   private $template_vars = array();
   private $headers = array();
   private $config = null;
@@ -15,20 +13,20 @@ class BaseHttpResponse {
     $this->config = $config;
     $this->template_directory = $template_directory;
   }
-  
+
   /**
    * Sets a header to the specified value for delivery when the page is rendered
-   * 
+   *
    * @param string $header_name Name of the header not including the colon
    * @param string $header_value Values of the header to send
    */
   public function header($header_name, $header_value) {
     $this->headers[$header_name] = $header_value;
   }
-  
+
   /**
    * Returns the value of a template value previously set
-   * 
+   *
    * @param string $template_variable_name Name of the template variable
    * @param mixed $default_value Value to be returned when the template variable was not set previously
    * @return mixed
@@ -39,10 +37,10 @@ class BaseHttpResponse {
     }
     return $default_value;
   }
-  
+
   /**
    * Sets a template value for later use in twig template while rendering
-   * 
+   *
    * @param string $template_variable_name Name of the template variable
    * @param mixed $template_variable_value Value of the template variable to set to
    */
@@ -171,11 +169,7 @@ class BaseHttpResponse {
 
     if(!empty($this->output_filters)) {
       foreach($this->output_filters as $key => $value) {
-        if(is_array($value)) {
-          $twig->addFilter($key, new Twig_Filter_Function($value[0] .'::'. $value[1]));
-        } else {
-          $twig->addFilter($key, new Twig_Filter_Function($value));
-        }
+        $twig->addFilter(new Twig_SimpleFilter($key, $value));
       }
     }
 
@@ -183,5 +177,5 @@ class BaseHttpResponse {
 
     return $template;
   }
-  
+
 }
