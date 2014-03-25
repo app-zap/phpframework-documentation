@@ -33,19 +33,6 @@ class Dispatcher {
     }
 
     BaseAutoLoader::register_app_path($application_directory);
-
-
-/*
-    if(is_dir(realpath(dirname(__FILE__) . '/../../private/templates'))) {
-      c::set('twig.root', realpath(dirname(__FILE__) . '/../../private/templates'));
-    } else {
-      c::set('twig.root', realpath(dirname(__FILE__) . '/../templates'));
-    }
-    c::set('twig.debug', $config->get('debug', 0) == 1);
-    if(!is_dir(c::get('twig.root' . '/cache')) || !$config->get('templatecache', true)) {
-      c::set('twig.cache', false);
-    }
-*/
   }
 
   public function dispatch($uri) {
@@ -66,7 +53,12 @@ class Dispatcher {
 
     // If the defined class does not match PHP class guidelines throw an exception
     if(!preg_match('/[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*/', $responder_class)) {
-      throw new InvalidHttpResponderException('Responder class does not match PHP class naming conventions');
+      if (is_null($responder_class)) {
+        $message = 'Routing failed. No matching responder class found for uri "' . $uri . '".';
+      } else {
+        $message = 'Responder class "' . $responder_class . '" does not match PHP class naming conventions';
+      }
+      throw new InvalidHttpResponderException($message);
     }
 
     // If the class does not exist throw an exception
