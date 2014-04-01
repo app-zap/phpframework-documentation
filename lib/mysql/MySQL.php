@@ -60,7 +60,7 @@ class MySQL {
     }
 
     $this->connection = $connection;
-    
+
     $this->set_charset($this->config['char']);
     $this->select_database($this->config['name']);
 
@@ -75,14 +75,14 @@ class MySQL {
   public function is_connected() {
     return $this->connection() !== null;
   }
-  
+
   private function connection() {
     return (is_resource($this->connection)) ? $this->connection : null;
   }
-  
+
   /**
    * Disconnects previously opened database connection
-   * 
+   *
    * @throws DBConnectionException when connection was not opened
    */
   public function disconnect() {
@@ -116,10 +116,10 @@ class MySQL {
   private function prefix_table($table) {
     return $this->config['prefix'] . $table;
   }
-  
+
   /**
    * Selects the database on the server
-   * 
+   *
    * @param string $database Database Name
    * @throws DBDatabaseException when database was not selectable
    */
@@ -139,7 +139,7 @@ class MySQL {
 
   /**
    * Sets the charset for transfer encoding
-   * 
+   *
    * @param string $charset Connection transfer charset
    */
   private function set_charset($charset = 'utf8') {
@@ -156,10 +156,10 @@ class MySQL {
     // save the new charset to the globals
     $this->charset = $charset;
   }
-  
+
   /**
    * Executes the passed SQL statement
-   * 
+   *
    * @param string $sql Finally escaped SQL statement
    * @return array Result data of the query
    */
@@ -170,13 +170,13 @@ class MySQL {
     while($row = $this->fetch($result)) {
       $retval[] = $row;
     }
-    
+
     return $retval;
   }
 
   /**
    * Executes the passed SQL statement
-   * 
+   *
    * @param string $sql Finally escaped SQL statement
    * @return resource Result data of the query
    */
@@ -189,33 +189,33 @@ class MySQL {
     $result = mysql_query($sql, $this->connection());
 
     if($result === false) {
-      throw new DBQueryException('Database query failed. Query was: "' . $sql . '"');
+      throw new DBQueryException('Database query failed. Error: "' . mysql_error(). '". Query was: "' . $sql . '"');
     }
-    
+
     return $result;
   }
-  
+
   /**
    * Returns number of affected rows of the last query
-   * 
+   *
    * @return int
    */
   public function affected() {
       return mysql_affected_rows($this->connection());
   }
-  
+
   /**
    * Returns the auto increment ID of the last query
-   * 
+   *
    * @return int
    */
   public function last_id() {
     return mysql_insert_id($this->connection());
   }
-  
+
   /**
    * Returns a row from the result set
-   * 
+   *
    * @param resource $result Resultset from query-function
    * @param int $type Type of the result (One of MYSQL_ASSOC, MYSQL_NUM and MYSQL_BOTH)
    * @return array
@@ -223,7 +223,7 @@ class MySQL {
   public function fetch($result, $type = MYSQL_ASSOC) {
     return mysql_fetch_array($result, $type);
   }
-  
+
   /**
    * Lists the fields of a table
    *
@@ -238,13 +238,13 @@ class MySQL {
     foreach($result as $row) {
       $output[] = $row['Field'];
     }
-    
+
     return $output;
   }
-   
+
   /**
    * Inserts dataset into the table and returns the auto increment key for it
-   * 
+   *
    * @param string $table Name of the table
    * @param string|array $input Dataset to insert into the table
    * @param boolean $ignore Use "INSERT IGNORE" for the query
@@ -255,10 +255,10 @@ class MySQL {
     $this->execute('INSERT' . ($ignore) . ' INTO ' . $this->prefix_table($table) . ' SET ' . $this->values($input));
     return $this->last_id();
   }
- 
+
   /**
    * Inserts dataset into the table or updates an existing key and returns the auto increment key for it
-   * 
+   *
    * @param string $table Name of the table
    * @param string|array $input Dataset to insert into the table
    * @param array $update_fields update this columns when ON DUPLICATE KEY
@@ -275,7 +275,7 @@ class MySQL {
     $this->execute('INSERT INTO ' . $this->prefix_table($table) . ' SET ' . $this->values($input) . ' ON DUPLICATE KEY UPDATE '. $this->values($update_values));
     return $this->last_id();
   }
-  
+
   /**
    * Inserts a bunch of rows into the table
    *
@@ -285,7 +285,7 @@ class MySQL {
    */
   public function insert_all($table, $fields, $values) {
     $sql = 'INSERT INTO ' . $this->prefix_table($table) . ' (`' . implode('`, `', $fields) . '`) VALUES (';
-    
+
     $rows = array();
     foreach($values as $row) {
       $fields = array();
@@ -296,13 +296,13 @@ class MySQL {
     }
     $sql .= implode('), (', $rows)
          . ')';
-    
+
     $this->execute($sql);
   }
-  
+
   /**
    * Replaces dataset in the table
-   * 
+   *
    * @param string $table Name of the table
    * @param string|array $input Dataset to replace in the table
    * @return resource
@@ -310,10 +310,10 @@ class MySQL {
   public function replace($table, $input) {
     return $this->execute('REPLACE INTO ' . $this->prefix_table($table) . ' SET ' . $this->values($input));
   }
-  
+
   /**
    * Updates datasets in the table
-   * 
+   *
    * @param string $table Name of the table
    * @param string|array $input Dataset to write over the old one into the table
    * @param string|array $where Selector for the datasets to overwrite
@@ -322,10 +322,10 @@ class MySQL {
   public function update($table, $input, $where) {
     return $this->execute('UPDATE ' . $this->prefix_table($table) . ' SET ' . $this->values($input) . ' WHERE ' . $this->where($where));
   }
-  
+
   /**
    * Deletes datasets from table
-   * 
+   *
    * @param string $table Name of the table
    * @param string|array $where Selector for the datasets to delete
    */
@@ -336,7 +336,7 @@ class MySQL {
     }
     $this->execute($sql);
   }
-  
+
   /**
    * Selects datasets from table
    *
@@ -355,14 +355,14 @@ class MySQL {
     if($where !== null) $sql .= ' WHERE ' . $this->where($where);
     if($order !== null) $sql .= ' ORDER BY ' . $order;
     if($start !== null && $limit !== null) $sql .= ' LIMIT ' . $start . ',' . $limit;
-    
+
     if($fetch) {
       return $this->query($sql);
     }
-    
+
     return $this->execute($sql);
   }
-  
+
   /**
    * Select one row from table or false if there is no row
    *
@@ -376,7 +376,7 @@ class MySQL {
     $result = $this->select($table, $select, $where, $order, 0,1, true);
     return (count($result) > 0) ? $result[0] : false;
   }
-  
+
   /**
    * Select contents of one column from table
    *
@@ -412,7 +412,7 @@ class MySQL {
     $result = $this->row($table, $field, $where, $order);
     return $result[$field];
   }
-  
+
   /**
    * Counts the rows matching the where clause in table
    *
@@ -424,7 +424,7 @@ class MySQL {
     $result = $this->row($table, 'count(1)', $where);
     return ($result) ? $result['count(1)'] : 0;
   }
-  
+
   /**
    * Selects the minmum of a column or false if there is no data
    *
@@ -437,7 +437,7 @@ class MySQL {
     $result = $this->row($table, 'MIN(`' . $column . '`) as min', $where);
     return ($result) ? $result['min'] : false;
   }
-  
+
   /**
    * Selects the maximum of a column or false if there is no data
    *
@@ -450,7 +450,7 @@ class MySQL {
     $result = $this->row($table, 'MAX(`' . $column . '`) as max', $where);
     return ($result) ? $result['max'] : false;
   }
-  
+
   /**
    * Selects the sum of a column
    *
@@ -496,7 +496,7 @@ class MySQL {
       return mysql_escape_string((string)$value);
     }
   }
-  
+
   /**
    * Assembles a LIKE search for the WHERE clause
    *
@@ -516,7 +516,7 @@ class MySQL {
     }
     return '(' . implode(' ' . trim($mode) . ' ', $arr) . ')';
   }
-  
+
   private function where($array, $method = 'AND') {
     if(!is_array($array)) {
       return $array;
@@ -534,7 +534,7 @@ class MySQL {
         $operand = 'LIKE';
         $field = substr($field, 0, -1);
       }
-      
+
       if(is_array($value)) {
         $arr = array();
         foreach($value as $v) {
