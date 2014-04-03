@@ -9,11 +9,18 @@ class Dispatcher {
   private $config = null;
   private $application_directory = null;
 
+  /**
+   * @param ConfigIni $config
+   * @param string $application_directory
+   */
   public function __construct($config, $application_directory) {
     if(BaseExceptionVisualizer::get_display_template() === null) {
       BaseExceptionVisualizer::set_display_template(dirname(__FILE__) . '/resources/exception_template.html');
     }
-    set_exception_handler('BaseExceptionVisualizer::render_exception');
+    $logging_conf = $config->getSection('logging');
+    if ($logging_conf['phpframework_exception_visualizer']) {
+      set_exception_handler('BaseExceptionVisualizer::render_exception');
+    }
 
     $this->config = $config;
     $this->application_directory = realpath($application_directory);
