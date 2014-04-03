@@ -3,8 +3,9 @@
 require_once(dirname(__FILE__) . '/IConfigReader.php');
 
 class ConfigIni implements IConfigReader {
-  private $config = null;
-  private $local_config = null;
+
+  private $config = array();
+  private $local_config = array();
 
   /**
    * @param string $config_file_path Path to the INI file to load for config
@@ -29,7 +30,7 @@ class ConfigIni implements IConfigReader {
    * @throws ConfigIniSectionNotFoundException when section "config" does not exist
    */
   public function get($config_key, $default = null) {
-    if($this->local_config !== null && array_key_exists('config', $this->local_config)) {
+    if(array_key_exists('config', $this->local_config)) {
       if(array_key_exists($config_key, $this->local_config['config'])) {
         return $this->local_config['config'][$config_key];
       }
