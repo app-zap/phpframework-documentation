@@ -8,8 +8,7 @@
       "AppZap\\PHPFramework\\": "classes/"
     },
     "files": [
-      "classes/BaseAutoloader.php",
-      "dispatcher.php"
+      "classes/BaseAutoloader.php"
     ]
   }
 }

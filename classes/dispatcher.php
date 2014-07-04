@@ -1,4 +1,5 @@
 <?php
+namespace AppZap\PHPFramework;
 
 /**
  * Main entrance class for the framework / application
@@ -10,12 +11,13 @@ class Dispatcher {
   private $application_directory = null;
 
   /**
-   * @param ConfigIni $config
+   * @param \ConfigIni $config
    * @param string $application_directory
+   * @throws ApplicationPartMissingException
    */
   public function __construct($config, $application_directory) {
-    if(BaseExceptionVisualizer::get_display_template() === null) {
-      BaseExceptionVisualizer::set_display_template(dirname(__FILE__) . '/resources/exception_template.html');
+    if(\BaseExceptionVisualizer::get_display_template() === null) {
+      \BaseExceptionVisualizer::set_display_template(dirname(__FILE__) . '/resources/exception_template.html');
     }
     $logging_conf = $config->getSection('logging');
     if ($logging_conf['phpframework_exception_visualizer']) {
@@ -39,7 +41,7 @@ class Dispatcher {
       throw new ApplicationPartMissingException('Template directory "' . $template_dir . '" does not exist.');
     }
 
-    BaseAutoLoader::register_app_path($application_directory);
+    \BaseAutoLoader::register_app_path($application_directory);
   }
 
   public function dispatch($uri) {
@@ -77,8 +79,8 @@ class Dispatcher {
       }
 
       $responder = new $responder_class(
-          new BaseHttpRequest($method)
-        , new BaseHttpResponse($this->config, rtrim($this->application_directory, '/') . '/templates/')
+          new \BaseHttpRequest($method)
+        , new \BaseHttpResponse($this->config, rtrim($this->application_directory, '/') . '/templates/')
         , $this->config
       );
 
@@ -94,5 +96,5 @@ class Dispatcher {
 
 }
 
-class ApplicationPartMissingException extends Exception {}
-class InvalidHttpResponderException extends Exception {}
+class ApplicationPartMissingException extends \Exception {}
+class InvalidHttpResponderException extends \Exception {}
