@@ -16,7 +16,7 @@ class ConfigIni implements IConfigReader {
       throw new ConfigIniFileNotFoundException('Config file ' . $config_file_path . ' was not found.');
     }
     $this->config = parse_ini_file($config_file_path, true);
-    if(is_readable($local_override_config)) {
+    if(!is_null($local_override_config) && is_readable($local_override_config)) {
       $this->local_config = parse_ini_file($local_override_config, true);
     }
   }
