@@ -4,6 +4,9 @@
     "twig/twig": "1.*"
   },
   "autoload": {
+    "psr-4": {
+      "AppZap\\PHPFramework\\": "classes/"
+    },
     "files": [
       "classes/BaseAutoloader.php",
       "dispatcher.php"
