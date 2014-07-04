@@ -1,5 +1,7 @@
 <?php
 
+use AppZap\PHPFramework\StaticConfiguration as Configuration;
+
 /**
  * MySQL database wrapper class
  */
@@ -16,7 +18,10 @@ class MySQL {
    * @param IConfigReader $config Config object containing the database config
    * @param string $connection_target Name of the database connection to read the settings from
    */
-  public function __construct($config, $connection_target = 'default') {
+  public function __construct($config = NULL, $connection_target = 'default') {
+    if (is_null($config)) {
+      $config = Configuration::getConfigurationObject();
+    }
     $this->config = array(
         'host' => $config->get('db.mysql.' . $connection_target . '.host')
       , 'user' => $config->get('db.mysql.' . $connection_target . '.user')
