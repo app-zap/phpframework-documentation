@@ -2,17 +2,20 @@
 namespace AppZap\PHPFramework\Domain\Repository;
 
 use AppZap\PHPFramework\Domain\Model\AbstractModel;
+use AppZap\PHPFramework\Persistence\MySQL;
+use AppZap\PHPFramework\Persistence\StaticMySQL;
+use AppZap\PHPFramework\Singleton;
 
 abstract class AbstractDomainRepository {
-use \AppZap\SpendierEs\Singleton;
+use Singleton;
 
   /**
-   * @var \MySQL
+   * @var MySQL
    */
   protected $db;
 
   public function __construct() {
-    $this->db = \StaticMySQL::getInstance();
+    $this->db = StaticMySQL::getInstance();
   }
 
   /**
