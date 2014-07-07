@@ -1,4 +1,5 @@
 <?php
+namespace AppZap\PHPFramework\Persistence;
 
 use AppZap\PHPFramework\StaticConfiguration as Configuration;
 
@@ -15,7 +16,7 @@ class MySQL {
   private $config = array();
 
   /**
-   * @param IConfigReader $config Config object containing the database config
+   * @param \IConfigReader $config Config object containing the database config
    * @param string $connection_target Name of the database connection to read the settings from
    */
   public function __construct($config = NULL, $connection_target = 'default') {
@@ -555,8 +556,8 @@ class MySQL {
 
 }
 
-class DBConnectionException extends Exception {}
-class DBQueryException extends Exception {}
-class DBDatabaseException extends Exception {}
-class InputException extends Exception {}
-class DBConfigException extends Exception {}
+class DBConnectionException extends \Exception {}
+class DBQueryException extends \Exception {}
+class DBDatabaseException extends \Exception {}
+class InputException extends \Exception {}
+class DBConfigException extends \Exception {}

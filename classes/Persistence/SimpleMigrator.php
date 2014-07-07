@@ -1,13 +1,12 @@
 <?php
-
-require_once dirname(__FILE__) . '/MySQL.php';
+namespace AppZap\PHPFramework\Persistence;
 
 class SimpleMigrator {
   private $connection;
   private $migration_directory;
 
   /**
-   * @param IConfigReader $config Config object containing the database config
+   * @param \IConfigReader $config Config object containing the database config
    * @param string $migration_directory Path to the directory with the migration files
    * @param string $connection_target Name of the database connection to read the settings from
    */
@@ -107,4 +106,4 @@ class SimpleMigrator {
 
 }
 
-class SimpleMigratorException extends Exception {}
+class SimpleMigratorException extends \Exception {}
