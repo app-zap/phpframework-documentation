@@ -86,7 +86,8 @@ use Singleton;
    */
   protected function determine_tablename() {
     $called_repository_classname = get_called_class();
-    $classname_without_namespace = array_pop(explode('\\', $called_repository_classname));
+    $called_repository_classname_parts = explode('\\', $called_repository_classname);
+    $classname_without_namespace = array_pop($called_repository_classname_parts);
     $tablename = strtolower(substr($classname_without_namespace, 0, -strlen('Repository')));
     return $tablename;
   }
