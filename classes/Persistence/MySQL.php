@@ -8,12 +8,25 @@ use AppZap\PHPFramework\StaticConfiguration as Configuration;
  */
 class MySQL {
 
-  public  $trace = array();
-  private $connection = null;
-  private $database = false;
-  private $charset = false;
+  /**
+   * @var array
+   */
+  public $trace = array();
 
-  private $config = array();
+  /**
+   * @var \mysqli
+   */
+  protected $connection = NULL;
+
+  /**
+   * @var string|bool
+   */
+  protected $charset = FALSE;
+
+  /**
+   * @var array
+   */
+  protected $config = array();
 
   /**
    * @param \IConfigReader $config Config object containing the database config
@@ -25,14 +38,14 @@ class MySQL {
     }
     $this->config = array(
         'host' => $config->get('db.mysql.' . $connection_target . '.host')
-      , 'user' => $config->get('db.mysql.' . $connection_target . '.user')
-      , 'pass' => $config->get('db.mysql.' . $connection_target . '.password')
-      , 'name' => $config->get('db.mysql.' . $connection_target . '.database')
-      , 'char' => $config->get('db.mysql.' . $connection_target . '.charset', 'utf8')
-      , 'prefix' => $config->get('db.mysql.' . $connection_target . '.tableprefix', '')
+    , 'user' => $config->get('db.mysql.' . $connection_target . '.user')
+    , 'pass' => $config->get('db.mysql.' . $connection_target . '.password')
+    , 'name' => $config->get('db.mysql.' . $connection_target . '.database')
+    , 'char' => $config->get('db.mysql.' . $connection_target . '.charset', 'utf8')
+    , 'prefix' => $config->get('db.mysql.' . $connection_target . '.tableprefix', '')
     );
 
-    if($this->config['name'] === null) {
+    if ($this->config['name'] === NULL) {
       throw new DBConfigException('Please define the connection parameters for "' . $connection_target . '"');
     }
   }
@@ -40,7 +53,8 @@ class MySQL {
   public function __destruct() {
     try {
       $this->disconnect();
-    } catch(DBConnectionException $ex) {}
+    } catch (DBConnectionException $ex) {
+    }
   }
 
   /**
@@ -53,22 +67,21 @@ class MySQL {
   public function connect() {
 
     $connection = $this->connection();
-    if($connection !== null) {
+    if ($connection !== NULL) {
       return $connection;
     }
 
     // don't connect again if it's already done
-    $connection = mysql_connect($this->config['host'], $this->config['user'], $this->config['pass']);
+    $connection = mysqli_connect($this->config['host'], $this->config['user'], $this->config['pass'], $this->config['name']);
 
     // react on connection failures
-    if(!$connection) {
+    if (!$connection) {
       throw new DBConnectionException('Database connection failed');
     }
 
     $this->connection = $connection;
 
     $this->set_charset($this->config['char']);
-    $this->select_database($this->config['name']);
 
     return $connection;
   }
@@ -79,11 +92,14 @@ class MySQL {
    * @return bool
    */
   public function is_connected() {
-    return $this->connection() !== null;
+    return $this->connection() !== NULL;
   }
 
-  private function connection() {
-    return (is_resource($this->connection)) ? $this->connection : null;
+  /**
+   * @return \mysqli
+   */
+  protected function connection() {
+    return ($this->connection instanceof \mysqli) ? $this->connection : NULL;
   }
 
   /**
@@ -93,14 +109,14 @@ class MySQL {
    */
   public function disconnect() {
     $connection = $this->connection();
-    if($connection === null) {
+    if ($connection === NULL) {
       throw new DBConnectionException('Tried to disconnect not opened connection.');
     }
 
-    $disconnect = mysql_close($connection);
-    $this->connection = null;
+    $disconnect = mysqli_close($connection);
+    $this->connection = NULL;
 
-    if(!$disconnect) {
+    if (!$disconnect) {
       throw new DBConnectionException('Disconnecting database failed');
     }
   }
@@ -124,26 +140,6 @@ class MySQL {
   }
 
   /**
-   * Selects the database on the server
-   *
-   * @param string $database Database Name
-   * @throws DBDatabaseException when database was not selectable
-   */
-  public function select_database($database) {
-    if($this->database == $database) {
-      return;
-    }
-
-    $select = mysql_select_db($database, $this->connection());
-
-    if($select === false) {
-      throw new DBDatabaseException('Selecting database "' . $database . '" failed');
-    }
-
-    $this->database = $database;
-  }
-
-  /**
    * Sets the charset for transfer encoding
    *
    * @param string $charset Connection transfer charset
@@ -151,13 +147,13 @@ class MySQL {
   private function set_charset($charset = 'utf8') {
 
     // check if there is a assigned charset and compare it
-    if($this->charset == $charset) {
+    if ($this->charset == $charset) {
       return;
     }
 
     // set the new charset
     $sql = 'SET NAMES ' . $charset;
-    $this->execute($sql, false);
+    $this->execute($sql, FALSE);
 
     // save the new charset to the globals
     $this->charset = $charset;
@@ -173,7 +169,7 @@ class MySQL {
     $result = $this->execute($sql);
 
     $retval = array();
-    while($row = $this->fetch($result)) {
+    while ($row = $this->fetch($result)) {
       $retval[] = $row;
     }
 
@@ -187,15 +183,15 @@ class MySQL {
    * @return resource Result data of the query
    */
   public function execute($sql) {
-    if($this->connection() === null) {
+    if ($this->connection() === NULL) {
       throw new DBConnectionException('Database has to be connected before executing query.');
     }
 
     // execute the query
-    $result = mysql_query($sql, $this->connection());
+    $result = mysqli_query($this->connection(), $sql);
 
-    if($result === false) {
-      throw new DBQueryException('Database query failed. Error: "' . mysql_error(). '". Query was: "' . $sql . '"');
+    if ($result === FALSE) {
+      throw new DBQueryException('Database query failed. Error: "' . mysqli_error($this->connection) . '". Query was: "' . $sql . '"');
     }
 
     return $result;
@@ -207,7 +203,7 @@ class MySQL {
    * @return int
    */
   public function affected() {
-      return mysql_affected_rows($this->connection());
+    return mysqli_affected_rows($this->connection());
   }
 
   /**
@@ -216,18 +212,17 @@ class MySQL {
    * @return int
    */
   public function last_id() {
-    return mysql_insert_id($this->connection());
+    return mysqli_insert_id($this->connection());
   }
 
   /**
    * Returns a row from the result set
    *
    * @param resource $result Resultset from query-function
-   * @param int $type Type of the result (One of MYSQL_ASSOC, MYSQL_NUM and MYSQL_BOTH)
    * @return array
    */
-  public function fetch($result, $type = MYSQL_ASSOC) {
-    return mysql_fetch_array($result, $type);
+  public function fetch($result) {
+    return mysqli_fetch_assoc($result);
   }
 
   /**
@@ -241,7 +236,7 @@ class MySQL {
     $result = $this->query($sql);
 
     $output = array();
-    foreach($result as $row) {
+    foreach ($result as $row) {
       $output[] = $row['Field'];
     }
 
@@ -256,7 +251,7 @@ class MySQL {
    * @param boolean $ignore Use "INSERT IGNORE" for the query
    * @return int
    */
-  public function insert($table, $input, $ignore = false) {
+  public function insert($table, $input, $ignore = FALSE) {
     $ignore = ($ignore) ? ' IGNORE' : '';
     $this->execute('INSERT' . ($ignore) . ' INTO ' . $this->prefix_table($table) . ' SET ' . $this->values($input));
     return $this->last_id();
@@ -272,13 +267,13 @@ class MySQL {
    */
   public function insert_or_update($table, $input, $update_fields = array()) {
     $update_values = array();
-    foreach($update_fields as $fieldname) {
-      if(isset($input[$fieldname])) {
+    foreach ($update_fields as $fieldname) {
+      if (isset($input[$fieldname])) {
         $update_values[$fieldname] = $input[$fieldname];
       }
     }
 
-    $this->execute('INSERT INTO ' . $this->prefix_table($table) . ' SET ' . $this->values($input) . ' ON DUPLICATE KEY UPDATE '. $this->values($update_values));
+    $this->execute('INSERT INTO ' . $this->prefix_table($table) . ' SET ' . $this->values($input) . ' ON DUPLICATE KEY UPDATE ' . $this->values($update_values));
     return $this->last_id();
   }
 
@@ -293,15 +288,15 @@ class MySQL {
     $sql = 'INSERT INTO ' . $this->prefix_table($table) . ' (`' . implode('`, `', $fields) . '`) VALUES (';
 
     $rows = array();
-    foreach($values as $row) {
+    foreach ($values as $row) {
       $fields = array();
-      foreach($row as $field) {
+      foreach ($row as $field) {
         $fields[] = $this->escape($field);
       }
       $rows[] = implode('\', \'', $fields);
     }
     $sql .= implode('), (', $rows)
-         . ')';
+        . ')';
 
     $this->execute($sql);
   }
@@ -335,9 +330,9 @@ class MySQL {
    * @param string $table Name of the table
    * @param string|array $where Selector for the datasets to delete
    */
-  public function delete($table, $where = null) {
+  public function delete($table, $where = NULL) {
     $sql = 'DELETE FROM ' . $this->prefix_table($table);
-    if($where !== null) {
+    if ($where !== NULL) {
       $sql .= ' WHERE ' . $this->where($where);
     }
     $this->execute($sql);
@@ -355,14 +350,14 @@ class MySQL {
    * @param boolean $fetch Return an pre-processed array of entries or the raw resource
    * @return array|resource
    */
-  public function select($table, $select = '*', $where = null, $order = null, $start = null, $limit = null, $fetch = true) {
+  public function select($table, $select = '*', $where = NULL, $order = NULL, $start = NULL, $limit = NULL, $fetch = TRUE) {
     $sql = 'SELECT ' . $select . ' FROM ' . $this->prefix_table($table);
 
-    if($where !== null) $sql .= ' WHERE ' . $this->where($where);
-    if($order !== null) $sql .= ' ORDER BY ' . $order;
-    if($start !== null && $limit !== null) $sql .= ' LIMIT ' . $start . ',' . $limit;
+    if ($where !== NULL) $sql .= ' WHERE ' . $this->where($where);
+    if ($order !== NULL) $sql .= ' ORDER BY ' . $order;
+    if ($start !== NULL && $limit !== NULL) $sql .= ' LIMIT ' . $start . ',' . $limit;
 
-    if($fetch) {
+    if ($fetch) {
       return $this->query($sql);
     }
 
@@ -378,9 +373,9 @@ class MySQL {
    * @param string $order Already escaped content of order clause
    * @return array|boolean
    */
-  public function row($table, $select = '*', $where = null, $order = null) {
-    $result = $this->select($table, $select, $where, $order, 0,1, true);
-    return (count($result) > 0) ? $result[0] : false;
+  public function row($table, $select = '*', $where = NULL, $order = NULL) {
+    $result = $this->select($table, $select, $where, $order, 0, 1, TRUE);
+    return (count($result) > 0) ? $result[0] : FALSE;
   }
 
   /**
@@ -394,11 +389,11 @@ class MySQL {
    * @param int $limit Number of entries to retrieve
    * @return array
    */
-  public function column($table, $column, $where = null, $order = null, $start = null, $limit = null) {
-    $result = $this->select($table, $column, $where, $order, $start, $limit, true);
+  public function column($table, $column, $where = NULL, $order = NULL, $start = NULL, $limit = NULL) {
+    $result = $this->select($table, $column, $where, $order, $start, $limit, TRUE);
 
     $retval = array();
-    foreach($result as $row) {
+    foreach ($result as $row) {
       $retval[] = $row[$column];
     }
     return $retval;
@@ -414,7 +409,7 @@ class MySQL {
    * @internal param string $column Name of column to retrieve
    * @return mixed
    */
-  public function field($table, $field, $where = null, $order = null) {
+  public function field($table, $field, $where = NULL, $order = NULL) {
     $result = $this->row($table, $field, $where, $order);
     return $result[$field];
   }
@@ -426,7 +421,7 @@ class MySQL {
    * @param string|array $where Selector for the datasets to select
    * @return int
    */
-  public function count($table, $where = null) {
+  public function count($table, $where = NULL) {
     $result = $this->row($table, 'count(1)', $where);
     return ($result) ? $result['count(1)'] : 0;
   }
@@ -439,9 +434,9 @@ class MySQL {
    * @param string|array $where Selector for the datasets to select
    * @return int|boolean
    */
-  public function min($table, $column, $where = null) {
+  public function min($table, $column, $where = NULL) {
     $result = $this->row($table, 'MIN(`' . $column . '`) as min', $where);
-    return ($result) ? $result['min'] : false;
+    return ($result) ? $result['min'] : FALSE;
   }
 
   /**
@@ -452,9 +447,9 @@ class MySQL {
    * @param string|array $where Selector for the datasets to select
    * @return int|boolean
    */
-  public function max($table, $column, $where = null) {
+  public function max($table, $column, $where = NULL) {
     $result = $this->row($table, 'MAX(`' . $column . '`) as max', $where);
-    return ($result) ? $result['max'] : false;
+    return ($result) ? $result['max'] : FALSE;
   }
 
   /**
@@ -465,21 +460,21 @@ class MySQL {
    * @param string|array $where Selector for the datasets to select
    * @return int
    */
-  public function sum($table, $column, $where = null) {
+  public function sum($table, $column, $where = NULL) {
     $result = $this->row($table, 'SUM(`' . $column . '`) as sum', $where);
     return ($result) ? $result['sum'] : 0;
   }
 
   private function values($input) {
-    if(!is_array($input)) {
+    if (!is_array($input)) {
       return $input;
     }
 
     $retval = array();
-    foreach($input as $key => $value) {
-      if($value === 'NOW()') {
+    foreach ($input as $key => $value) {
+      if ($value === 'NOW()') {
         $retval[] = '`' . $key . '`' . ' = NOW()';
-      } elseif($value === null) {
+      } elseif ($value === NULL) {
         $retval[] = '`' . $key . '`' . ' = NULL';
       } else {
         $retval[] = '`' . $key . '`' . ' = \'' . $this->escape($value) . '\'';
@@ -496,11 +491,7 @@ class MySQL {
    */
   public function escape($value) {
     $value = stripslashes($value);
-    if($this->connection() !== null) {
-      return mysql_real_escape_string((string)$value, $this->connection());
-    } else {
-      return mysql_escape_string((string)$value);
-    }
+    return mysqli_real_escape_string($this->connection(), (string)$value);
   }
 
   /**
@@ -512,24 +503,24 @@ class MySQL {
    * @return string
    */
   public function search_clause($search, $fields, $mode = 'OR') {
-    if(empty($search)) {
+    if (empty($search)) {
       throw new InputException('Empty search value not allowed. Use select instead.');
     }
 
     $arr = array();
-    foreach($fields as $f) {
+    foreach ($fields as $f) {
       $arr[] = '`' . $f . '` LIKE \'%' . $search . '%\'';
     }
     return '(' . implode(' ' . trim($mode) . ' ', $arr) . ')';
   }
 
   private function where($array, $method = 'AND') {
-    if(!is_array($array)) {
+    if (!is_array($array)) {
       return $array;
     }
 
     $output = array();
-    foreach($array AS $field => $value) {
+    foreach ($array AS $field => $value) {
       $operand = '=';
       $operand2 = 'IN';
       if (substr($field, -1) == '!') {
@@ -541,9 +532,9 @@ class MySQL {
         $field = substr($field, 0, -1);
       }
 
-      if(is_array($value)) {
+      if (is_array($value)) {
         $arr = array();
-        foreach($value as $v) {
+        foreach ($value as $v) {
           $arr[] = $this->escape($v);
         }
         $output[] = '`' . $field . '`' . ' ' . $operand2 . ' (\'' . implode('\', \'', $arr) . '\')';
@@ -556,8 +547,17 @@ class MySQL {
 
 }
 
-class DBConnectionException extends \Exception {}
-class DBQueryException extends \Exception {}
-class DBDatabaseException extends \Exception {}
-class InputException extends \Exception {}
-class DBConfigException extends \Exception {}
+class DBConnectionException extends \Exception {
+}
+
+class DBQueryException extends \Exception {
+}
+
+class DBDatabaseException extends \Exception {
+}
+
+class InputException extends \Exception {
+}
+
+class DBConfigException extends \Exception {
+}
