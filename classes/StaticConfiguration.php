@@ -17,8 +17,16 @@ class StaticConfiguration {
    * @param string $config_file_path
    * @param string $local_override_config
    */
-  static public function init($config_file_path, $local_override_config = null) {
+  static public function init($application_directory, $config_file_path = NULL, $local_override_config = NULL) {
+    if (is_null($config_file_path)) {
+      $config_file_path = $application_directory . 'settings.ini';
+    }
+    if (is_null($local_override_config)) {
+      $local_override_config = $application_directory . 'settings_local.ini';
+    }
     self::$configuration = new \ConfigIni($config_file_path, $local_override_config);
+    self::set('templates_directory', $application_directory . 'templates/');
+    self::set('application_directory', $application_directory);
   }
 
   /**
