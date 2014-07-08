@@ -3,19 +3,20 @@
 require_once(dirname(__FILE__) . '/IConfigReader.php');
 
 class ConfigIni implements IConfigReader {
-  private $config = null;
-  private $local_config = null;
+
+  private $config = array();
+  private $local_config = array();
 
   /**
    * @param string $config_file_path Path to the INI file to load for config
    * @param string $local_override_config Path to a local INI file to override the global config
    */
   public function __construct($config_file_path, $local_override_config = null) {
-    if(!file_exists($config_file_path)) {
+    if(!is_readable($config_file_path)) {
       throw new ConfigIniFileNotFoundException('Config file ' . $config_file_path . ' was not found.');
     }
     $this->config = parse_ini_file($config_file_path, true);
-    if($local_override_config !== null) {
+    if(!is_null($local_override_config) && is_readable($local_override_config)) {
       $this->local_config = parse_ini_file($local_override_config, true);
     }
   }
@@ -29,7 +30,7 @@ class ConfigIni implements IConfigReader {
    * @throws ConfigIniSectionNotFoundException when section "config" does not exist
    */
   public function get($config_key, $default = null) {
-    if($this->local_config !== null && array_key_exists('config', $this->local_config)) {
+    if(array_key_exists('config', $this->local_config)) {
       if(array_key_exists($config_key, $this->local_config['config'])) {
         return $this->local_config['config'][$config_key];
       }
@@ -52,15 +53,11 @@ class ConfigIni implements IConfigReader {
    * @throws ConfigIniSectionNotFoundException when section $config_section_name does not exist
    */
   public function getSection($config_section_name) {
-    if($this->local_config !== null && array_key_exists($config_section_name, $this->local_config)) {
-      return $this->local_config[$config_section_name];
-    }
-    
-    if(array_key_exists($config_section_name, $this->config)) {
-      return $this->config[$config_section_name];
-    } else {
+    $config = array_replace_recursive($this->config, $this->local_config);
+    if (!isset($config[$config_section_name])) {
       throw new ConfigIniSectionNotFoundException('Config section \'' . $config_section_name . '\' not found.');
     }
+    return $config[$config_section_name];
   }
 
   /**

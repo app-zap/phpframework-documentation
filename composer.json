@@ -1,12 +1,14 @@
 {
   "name": "smichaelsen/phpframework",
   "require": {
-    "twig/twig": "1.*"
+    "twig/twig": "1.15.*"
   },
   "autoload": {
+    "psr-4": {
+      "AppZap\\PHPFramework\\": "classes/"
+    },
     "files": [
-      "classes/BaseAutoloader.php",
-      "dispatcher.php"
+      "classes/BaseAutoloader.php"
     ]
   }
 }

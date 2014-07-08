@@ -1,18 +1,23 @@
 <?php
+namespace AppZap\PHPFramework\Persistence;
 
-require_once dirname(__FILE__) . '/MySQL.php';
+use AppZap\PHPFramework\StaticConfiguration as Configuration;
 
 class SimpleMigrator {
   private $connection;
   private $migration_directory;
 
   /**
-   * @param IConfigReader $config Config object containing the database config
    * @param string $migration_directory Path to the directory with the migration files
    * @param string $connection_target Name of the database connection to read the settings from
    */
-  public function __construct($config, $migration_directory, $connection_target = 'default') {
-    $this->connection = new MySQL($config, $connection_target);
+  public function __construct($migration_directory = NULL, $connection_target = 'default') {
+
+    if (is_null($migration_directory)) {
+      $migration_directory = Configuration::get('application_directory') . '_sql';
+    }
+
+    $this->connection = new MySQL();
     $this->migration_directory = $migration_directory;
 
     if(!is_dir($migration_directory)) {
@@ -107,4 +112,4 @@ class SimpleMigrator {
 
 }
 
-class SimpleMigratorException extends Exception {}
+class SimpleMigratorException extends \Exception {}
