@@ -1,11 +1,12 @@
 <?php
+namespace AppZap\PHPFramework\Authentication;
 
 class BasePHPSession implements BaseSessionInterface {
 
   /**
-   * @param IConfigReader $config for phpunit
+   *
    */
-  public function __construct($config) {
+  public function __construct() {
       session_start();
   }
 
@@ -18,7 +19,7 @@ class BasePHPSession implements BaseSessionInterface {
     $key = (string)$key;
     $_SESSION[$key] = $value;
 
-    return $this; 
+    return $this;
   }
 
   /**
@@ -50,7 +51,7 @@ class BasePHPSession implements BaseSessionInterface {
    * @param string $key
    * @return BasePHPSession
    * @throws BaseSessionUndefinedIndexException if $key not in $_SESSION
-   */ 
+   */
   public function clear($key) {
     $key = (string)$key;
 
@@ -67,6 +68,6 @@ class BasePHPSession implements BaseSessionInterface {
    */
   public function clear_all() {
     session_unset();
-    return $this; 
+    return $this;
   }
 }

@@ -1,7 +1,7 @@
 <?php
 namespace AppZap\PHPFramework\Persistence;
 
-use AppZap\PHPFramework\StaticConfiguration as Configuration;
+use AppZap\PHPFramework\Configuration\Configuration;
 
 /**
  * MySQL database wrapper class
@@ -23,33 +23,6 @@ class MySQL {
    */
   protected $charset = FALSE;
 
-  /**
-   * @var array
-   */
-  protected $config = array();
-
-  /**
-   * @param \IConfigReader $config Config object containing the database config
-   * @param string $connection_target Name of the database connection to read the settings from
-   */
-  public function __construct($config = NULL, $connection_target = 'default') {
-    if (is_null($config)) {
-      $config = Configuration::getConfigurationObject();
-    }
-    $this->config = array(
-        'host' => $config->get('db.mysql.' . $connection_target . '.host')
-    , 'user' => $config->get('db.mysql.' . $connection_target . '.user')
-    , 'pass' => $config->get('db.mysql.' . $connection_target . '.password')
-    , 'name' => $config->get('db.mysql.' . $connection_target . '.database')
-    , 'char' => $config->get('db.mysql.' . $connection_target . '.charset', 'utf8')
-    , 'prefix' => $config->get('db.mysql.' . $connection_target . '.tableprefix', '')
-    );
-
-    if ($this->config['name'] === NULL) {
-      throw new DBConfigException('Please define the connection parameters for "' . $connection_target . '"');
-    }
-  }
-
   public function __destruct() {
     try {
       $this->disconnect();
@@ -65,25 +38,18 @@ class MySQL {
    * @return resource Database connection handle
    */
   public function connect() {
-
-    $connection = $this->connection();
-    if ($connection !== NULL) {
-      return $connection;
+    if (!($this->connection instanceof \mysqli)) {
+      $db_configuration = Configuration::getSection('db');
+      $this->connection = mysqli_connect($db_configuration['mysql.host'], $db_configuration['mysql.user'], $db_configuration['mysql.password'], $db_configuration['mysql.database']);
+      // react on connection failures
+      if (!$this->connection) {
+        throw new DBConnectionException('Database connection failed');
+      }
+      if (isset($db_configuration['charset'])) {
+        $this->set_charset($db_configuration['charset']);
+      }
     }
-
-    // don't connect again if it's already done
-    $connection = mysqli_connect($this->config['host'], $this->config['user'], $this->config['pass'], $this->config['name']);
-
-    // react on connection failures
-    if (!$connection) {
-      throw new DBConnectionException('Database connection failed');
-    }
-
-    $this->connection = $connection;
-
-    $this->set_charset($this->config['char']);
-
-    return $connection;
+    return $this->connection;
   }
 
   /**
@@ -92,13 +58,13 @@ class MySQL {
    * @return bool
    */
   public function is_connected() {
-    return $this->connection() !== NULL;
+    return $this->get_connection() !== NULL;
   }
 
   /**
    * @return \mysqli
    */
-  protected function connection() {
+  protected function get_connection() {
     return ($this->connection instanceof \mysqli) ? $this->connection : NULL;
   }
 
@@ -108,7 +74,7 @@ class MySQL {
    * @throws DBConnectionException when connection was not opened
    */
   public function disconnect() {
-    $connection = $this->connection();
+    $connection = $this->get_connection();
     if ($connection === NULL) {
       throw new DBConnectionException('Tried to disconnect not opened connection.');
     }
@@ -122,21 +88,11 @@ class MySQL {
   }
 
   /**
-   * @param string $table_prefix Prefix to use for all future statements
-   */
-  public function set_global_table_prefix($table_prefix) {
-    $this->config['prefix'] = $table_prefix;
-  }
-
-  /**
+   * @param string $table
    * @return string
    */
-  public function get_global_table_prefix() {
-    return $this->config['prefix'];
-  }
-
-  private function prefix_table($table) {
-    return $this->config['prefix'] . $table;
+  protected function prefix_table($table) {
+    return Configuration::get('db', 'prefix', '') . $table;
   }
 
   /**
@@ -183,12 +139,12 @@ class MySQL {
    * @return resource Result data of the query
    */
   public function execute($sql) {
-    if ($this->connection() === NULL) {
+    if ($this->get_connection() === NULL) {
       throw new DBConnectionException('Database has to be connected before executing query.');
     }
 
     // execute the query
-    $result = mysqli_query($this->connection(), $sql);
+    $result = mysqli_query($this->get_connection(), $sql);
 
     if ($result === FALSE) {
       throw new DBQueryException('Database query failed. Error: "' . mysqli_error($this->connection) . '". Query was: "' . $sql . '"');
@@ -203,7 +159,7 @@ class MySQL {
    * @return int
    */
   public function affected() {
-    return mysqli_affected_rows($this->connection());
+    return mysqli_affected_rows($this->get_connection());
   }
 
   /**
@@ -212,7 +168,7 @@ class MySQL {
    * @return int
    */
   public function last_id() {
-    return mysqli_insert_id($this->connection());
+    return mysqli_insert_id($this->get_connection());
   }
 
   /**
@@ -491,7 +447,7 @@ class MySQL {
    */
   public function escape($value) {
     $value = stripslashes($value);
-    return mysqli_real_escape_string($this->connection(), (string)$value);
+    return mysqli_real_escape_string($this->get_connection(), (string)$value);
   }
 
   /**

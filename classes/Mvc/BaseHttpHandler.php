@@ -1,32 +1,24 @@
 <?php
-
-require_once(dirname(__FILE__) . '/BaseSessionInterface.php');
+namespace AppZap\PHPFramework\Mvc;
 
 class BaseHttpHandler {
 
   /**
-   * @var BaseHttpRequest
+   * @var \BaseHttpRequest
    */
   protected $request = null;
   /**
-   * @var BaseHttpResponse
+   * @var \BaseHttpResponse
    */
   protected $response = null;
 
   /**
-   * @var IConfigReader
+   * @param \BaseHttpRequest $request
+   * @param \BaseHttpResponse $response
    */
-  protected $config = null;
-
-  /**
-   * @param BaseHttpRequest $request
-   * @param BaseHttpResponse $response
-   * @param IConfigReader $config
-   */
-  public function __construct($request, $response, $config) {
+  public function __construct($request, $response) {
     $this->request = $request;
     $this->response = $response;
-    $this->config = $config;
   }
 
   /**
@@ -63,4 +55,4 @@ class BaseHttpHandler {
   public function cli($params) { throw new MethodNotImplementedException('Method CLI not implemented for ' . get_class($this)); }
 }
 
-class MethodNotImplementedException extends Exception {}
+class MethodNotImplementedException extends \Exception {}

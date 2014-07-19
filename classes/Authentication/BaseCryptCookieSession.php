@@ -1,4 +1,7 @@
 <?php
+namespace AppZap\PHPFramework\Authentication;
+
+use AppZap\PHPFramework\Configuration\Configuration;
 
 class BaseCryptCookieSession implements BaseSessionInterface {
 
@@ -6,10 +9,6 @@ class BaseCryptCookieSession implements BaseSessionInterface {
    * @var array
    */
   private $store = array();
-  /**
-   * @var IConfigReader
-   */
-  private $config;
 
   /**
    * @var string
@@ -17,16 +16,15 @@ class BaseCryptCookieSession implements BaseSessionInterface {
   private $cookie_name;
 
   /**
-   * @param IConfigReader $config
+   * @throws BaseCryptCookieSessionException
    */
-  public function __construct($config) {
-    $this->config = $config;
-    $this->cookie_name = $this->config->get('cookie.name', 'SecureSessionCookie');
+  public function __construct() {
+    $this->cookie_name = Configuration::get('application', 'cookie.name', 'SecureSessionCookie');;
 
-    if($this->config->get('cookie.encrypt_key', null) === null) {
+    if(Configuration::get('application', 'cookie.encrypt_key')) {
       throw new BaseCryptCookieSessionException('Config key "cookie.encrypt_key" must be set!');
     }
-    
+
     $this->decodeCryptCookie();
   }
 
@@ -48,9 +46,12 @@ class BaseCryptCookieSession implements BaseSessionInterface {
     $this->store[$key] = $value;
     $this->encodeCryptCookie();
   }
-  
-  private function decodeCryptCookie() {
-    $sSecretKey = $this->config->get('cookie.encrypt_key');
+
+  /**
+   *
+   */
+  protected function decodeCryptCookie() {
+    $sSecretKey = Configuration::get('application', 'cookie.encrypt_key');
     if(!array_key_exists($this->cookie_name, $_COOKIE)) {
       return;
     }
@@ -58,9 +59,12 @@ class BaseCryptCookieSession implements BaseSessionInterface {
     $data = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $sSecretKey, base64_decode($sEncrypted), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));
     $this->store = json_decode($data, true);
   }
-  
-  private function encodeCryptCookie() {
-    $sSecretKey = $this->config->get('cookie.encrypt_key');
+
+  /**
+   *
+   */
+  protected function encodeCryptCookie() {
+    $sSecretKey = Configuration::get('application', 'cookie.encrypt_key');
     $sDecrypted = json_encode($this->store);
     $data = trim(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $sSecretKey, $sDecrypted, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND))));
     setcookie($this->cookie_name, $data, time() + 31 * 86400, '/');
@@ -93,4 +97,4 @@ class BaseCryptCookieSession implements BaseSessionInterface {
   }
 }
 
-class BaseCryptCookieSessionException extends Exception {}
+class BaseCryptCookieSessionException extends \Exception {}

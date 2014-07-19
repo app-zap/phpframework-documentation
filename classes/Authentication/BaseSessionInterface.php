@@ -1,15 +1,16 @@
 <?php
+namespace AppZap\PHPFramework\Authentication;
 
 interface BaseSessionInterface {
 
   /**
-   * @param IConfigReader $config
+   *
    */
-  public function __construct($config);
+  public function __construct();
 
   /**
    * @param string $key
-   * @param mixed $value 
+   * @param mixed $value
    * @return BaseSessionInterface
    */
   public function set($key, $value);
@@ -40,15 +41,7 @@ interface BaseSessionInterface {
   public function clear_all();
 }
 
-class BaseSessionException extends Exception {}
 
-class BaseSessionUndefinedIndexException extends Exception {
 
-  /**
-   * @param string $index
-   */
-  public function __construct($index) {
-    parent::__construct('Undefined session index ' . $index);
-  }
-}
+
 

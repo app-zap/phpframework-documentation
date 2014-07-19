@@ -1,18 +1,14 @@
 <?php
+namespace AppZap\PHPFramework\Mvc;
+
+use AppZap\PHPFramework\Configuration\Configuration;
 
 class BaseHttpResponse {
 
   private $template_vars = array();
   private $headers = array();
-  private $config = null;
-  private $template_directory = null;
   private $output_filters = array();
   private $output_functions = array();
-
-  public function __construct($config, $template_directory) {
-    $this->config = $config;
-    $this->template_directory = $template_directory;
-  }
 
   /**
    * Sets a header to the specified value for delivery when the page is rendered
@@ -152,24 +148,28 @@ class BaseHttpResponse {
     }
   }
 
-  private function get_template_environment($template_name) {
-    Twig_Autoloader::register();
-    $loader = new Twig_Loader_Filesystem($this->template_directory);
-    $twig = new Twig_Environment($loader);
+  /**
+   * @param string $template_name
+   * @return \Twig_TemplateInterface
+   */
+  protected function get_template_environment($template_name) {
+    \Twig_Autoloader::register();
+    $loader = new \Twig_Loader_Filesystem(Configuration::get('application', 'templates_directory'));
+    $twig = new \Twig_Environment($loader);
 
     if(!empty($this->output_functions)) {
       foreach($this->output_functions as $key => $value) {
         if(is_array($value)) {
-          $twig->addFunction($key, new Twig_Function_Function($value[0] .'::'. $value[1]));
+          $twig->addFunction($key, new \Twig_Function_Function($value[0] .'::'. $value[1]));
         } else {
-          $twig->addFunction($key, new Twig_Function_Function($value));
+          $twig->addFunction($key, new \Twig_Function_Function($value));
         }
       }
     }
 
     if(!empty($this->output_filters)) {
       foreach($this->output_filters as $key => $value) {
-        $twig->addFilter(new Twig_SimpleFilter($key, $value));
+        $twig->addFilter(new \Twig_SimpleFilter($key, $value));
       }
     }
 

@@ -1,4 +1,5 @@
 <?php
+namespace AppZap\PHPFramework;
 
 class BaseExceptionVisualizer {
   private static $display_template = null;
@@ -27,7 +28,7 @@ class BaseExceptionVisualizer {
    * Renders the exception display and puts it to stdout
    *
    * @static
-   * @param Exception $exception The exception which occured
+   * @param \Exception $exception The exception which occured
    */
   public static function render_exception($exception) {
     if(!headers_sent()) {
@@ -37,10 +38,10 @@ class BaseExceptionVisualizer {
     $template_vars = self::generate_template_vars($exception);
 
     if(self::$display_template !== null) {
-      Twig_Autoloader::register();
+      \Twig_Autoloader::register();
 
-      $loader = new Twig_Loader_Filesystem(dirname(self::$display_template));
-      $twig = new Twig_Environment($loader);
+      $loader = new \Twig_Loader_Filesystem(dirname(self::$display_template));
+      $twig = new \Twig_Environment($loader);
       $template = $twig->loadTemplate(basename(self::$display_template));
       $template->display($template_vars);
     } else {
@@ -50,16 +51,19 @@ class BaseExceptionVisualizer {
 
   /**
    * @static
-   * @param Exception $exception
+   * @param \Exception $exception
    * @return array
    */
-  private static function generate_template_vars($exception) {
+  protected static function generate_template_vars($exception) {
+
+
     // these are our templates
     $traceline = "#%s %s(%s): %s(%s)";
     $msg = "Uncaught exception '%s' with message '%s' <br />in %s:%s";
     $trace_s = "Stack trace:\n%s\n  thrown in %s on line %s";
 
     // alter your trace as you please, here
+    $key = 0;
     $trace = $exception->getTrace();
     foreach ($trace as $key => $stackPoint) {
       // I'm converting arguments to their type
