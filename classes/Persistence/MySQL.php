@@ -11,7 +11,7 @@ class MySQL {
   /**
    * @var array
    */
-  public $trace = array();
+  public $trace = [];
 
   /**
    * @var \mysqli
@@ -124,7 +124,7 @@ class MySQL {
   public function query($sql) {
     $result = $this->execute($sql);
 
-    $retval = array();
+    $retval = [];
     while ($row = $this->fetch($result)) {
       $retval[] = $row;
     }
@@ -191,7 +191,7 @@ class MySQL {
     $sql = 'SHOW COLUMNS FROM ' . $this->prefix_table($table);
     $result = $this->query($sql);
 
-    $output = array();
+    $output = [];
     foreach ($result as $row) {
       $output[] = $row['Field'];
     }
@@ -221,8 +221,8 @@ class MySQL {
    * @param array $update_fields update this columns when ON DUPLICATE KEY
    * @return int
    */
-  public function insert_or_update($table, $input, $update_fields = array()) {
-    $update_values = array();
+  public function insert_or_update($table, $input, $update_fields = []) {
+    $update_values = [];
     foreach ($update_fields as $fieldname) {
       if (isset($input[$fieldname])) {
         $update_values[$fieldname] = $input[$fieldname];
@@ -243,9 +243,9 @@ class MySQL {
   public function insert_all($table, $fields, $values) {
     $sql = 'INSERT INTO ' . $this->prefix_table($table) . ' (`' . implode('`, `', $fields) . '`) VALUES (';
 
-    $rows = array();
+    $rows = [];
     foreach ($values as $row) {
-      $fields = array();
+      $fields = [];
       foreach ($row as $field) {
         $fields[] = $this->escape($field);
       }
@@ -348,7 +348,7 @@ class MySQL {
   public function column($table, $column, $where = NULL, $order = NULL, $start = NULL, $limit = NULL) {
     $result = $this->select($table, $column, $where, $order, $start, $limit, TRUE);
 
-    $retval = array();
+    $retval = [];
     foreach ($result as $row) {
       $retval[] = $row[$column];
     }
@@ -426,7 +426,7 @@ class MySQL {
       return $input;
     }
 
-    $retval = array();
+    $retval = [];
     foreach ($input as $key => $value) {
       if ($value === 'NOW()') {
         $retval[] = '`' . $key . '`' . ' = NOW()';
@@ -463,7 +463,7 @@ class MySQL {
       throw new InputException('Empty search value not allowed. Use select instead.');
     }
 
-    $arr = array();
+    $arr = [];
     foreach ($fields as $f) {
       $arr[] = '`' . $f . '` LIKE \'%' . $search . '%\'';
     }
@@ -475,7 +475,7 @@ class MySQL {
       return $array;
     }
 
-    $output = array();
+    $output = [];
     foreach ($array AS $field => $value) {
       $operand = '=';
       $operand2 = 'IN';
@@ -489,7 +489,7 @@ class MySQL {
       }
 
       if (is_array($value)) {
-        $arr = array();
+        $arr = [];
         foreach ($value as $v) {
           $arr[] = $this->escape($v);
         }

@@ -3,12 +3,19 @@ namespace AppZap\PHPFramework\Mvc;
 
 class BaseHttpRequest {
 
-  private $value_sources = array(
-      'get' => array('default' => 'get', 'fallback' => 'post')
-    , 'post' => array('default' => 'post', 'fallback' => 'get')
-    , 'head' => array('default' => 'get', 'fallback' => 'post')
-  );
-  private $request_method = null;
+  /**
+   * @var array
+   */
+  protected $value_sources = [
+    'get' => ['default' => 'get', 'fallback' => 'post'],
+    'post' => ['default' => 'post', 'fallback' => 'get'],
+    'head' => ['default' => 'get', 'fallback' => 'post'],
+  ];
+
+  /**
+   * @var string
+   */
+  protected $request_method;
 
   public function __construct($request_method) {
     $this->request_method = $request_method;

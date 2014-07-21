@@ -41,7 +41,7 @@ class Dispatcher {
     $uri = preg_replace('/\?.*$/', '', $uri);
 
     $responder_class = NULL;
-    $params = array();
+    $params = [];
     foreach ($routes as $regex => $class) {
       if (preg_match($regex, $uri, $matches)) {
         $responder_class = $class;

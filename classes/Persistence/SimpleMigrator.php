@@ -29,7 +29,7 @@ class SimpleMigrator {
   /**
    * @return int
    */
-  private function get_current_migration_version() {
+  protected function get_current_migration_version() {
     if(count($this->connection->query("SHOW TABLES LIKE 'migration_ver'")) < 1) {
       return 0;
     }
@@ -40,16 +40,17 @@ class SimpleMigrator {
   /**
    * @param int $version
    */
-  private function set_current_migration_version($version) {
+  protected function set_current_migration_version($version) {
     if(count($this->connection->query("SHOW TABLES LIKE 'migration_ver'")) < 1) {
       $sql = "CREATE TABLE IF NOT EXISTS `migration_ver` (`version` int(11) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;";
       $this->connection->execute($sql);
     }
 
+    $data = ['version' => $version];
     if($this->connection->count('migration_ver') < 1) {
-      $this->connection->insert('migration_ver', array('version' => $version));
+      $this->connection->insert('migration_ver', $data);
     } else {
-      $this->connection->update('migration_ver', array('version' => $version), '1 = 1');
+      $this->connection->update('migration_ver', $data, '1 = 1');
     }
   }
 
@@ -57,7 +58,7 @@ class SimpleMigrator {
    * @param string $filename
    * @throws SimpleMigratorException when any command of the file is not executable
    */
-  private function execute_statement_file($filename) {
+  protected function execute_statement_file($filename) {
     $this->connection->execute('SET autocommit = 0;');
     $this->connection->execute('START TRANSACTION;');
 
@@ -83,8 +84,8 @@ class SimpleMigrator {
   }
 
   public function migrate() {
-    $migration_files = array();
-    $matches = array();
+    $migration_files = [];
+    $matches = [];
     if($handle = opendir($this->migration_directory)) {
       while($file = readdir($handle)) {
         if(preg_match('/^([0-9]+)_.*\.sql$/', $file, $matches) > 0) {

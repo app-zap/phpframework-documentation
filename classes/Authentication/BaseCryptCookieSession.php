@@ -8,12 +8,12 @@ class BaseCryptCookieSession implements BaseSessionInterface {
   /**
    * @var array
    */
-  private $store = array();
+  protected $store = [];
 
   /**
    * @var string
    */
-  private $cookie_name;
+  protected $cookie_name;
 
   /**
    * @throws BaseCryptCookieSessionException
@@ -92,7 +92,7 @@ class BaseCryptCookieSession implements BaseSessionInterface {
    * @return BaseSessionInterface
    */
   public function clear_all() {
-    $this->store = array();
+    $this->store = [];
     $this->encodeCryptCookie();
   }
 }

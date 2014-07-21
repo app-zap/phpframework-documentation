@@ -54,7 +54,7 @@ use Singleton;
     foreach ($record as $key => $value) {
       $setter = 'set_' . $key;
       if (method_exists($object, $setter)) {
-        call_user_func(array($object, $setter), $value);
+        call_user_func([$object, $setter], $value);
       }
     }
     return $object;
@@ -69,7 +69,7 @@ use Singleton;
     foreach (get_class_methods($object) as $method_name) {
       if (substr($method_name, 0, 4) == 'get_') {
         $field_name = substr($method_name, 4);
-        $value = call_user_func(array($object, $method_name));
+        $value = call_user_func([$object, $method_name]);
         if ($value instanceof AbstractModel) {
           $value = $value->get_id();
         } elseif ($value instanceof \DateTime) {

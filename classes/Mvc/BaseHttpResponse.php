@@ -5,10 +5,10 @@ use AppZap\PHPFramework\Configuration\Configuration;
 
 class BaseHttpResponse {
 
-  private $template_vars = array();
-  private $headers = array();
-  private $output_filters = array();
-  private $output_functions = array();
+  protected $template_vars = [];
+  protected $headers = [];
+  protected $output_filters = [];
+  protected $output_functions = [];
 
   /**
    * Sets a header to the specified value for delivery when the page is rendered
@@ -142,7 +142,7 @@ class BaseHttpResponse {
     $this->output_functions[$name] = $function;
   }
 
-  private function send_headers() {
+  protected function send_headers() {
     foreach($this->headers as $header => $value) {
       header($header . ': ' . $value);
     }

@@ -72,7 +72,7 @@ class BaseExceptionVisualizer {
     }
 
     // build your tracelines
-    $result = array();
+    $result = [];
     foreach ($trace as $key => $stackPoint) {
       $result[] = sprintf(
         $traceline,
@@ -102,9 +102,9 @@ class BaseExceptionVisualizer {
     );
 
     // log or echo as you please
-    return array(
+    return [
       'message' => $msg,
       'stacktrace' => $trace
-    );
+    ];
   }
 }
