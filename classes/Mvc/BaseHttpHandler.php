@@ -1,24 +1,30 @@
 <?php
 namespace AppZap\PHPFramework\Mvc;
 
-class BaseHttpHandler {
+abstract class BaseHttpHandler {
 
   /**
-   * @var \BaseHttpRequest
+   * @var BaseHttpRequest
    */
   protected $request = null;
   /**
-   * @var \BaseHttpResponse
+   * @var BaseHttpResponse
    */
   protected $response = null;
 
   /**
-   * @param \BaseHttpRequest $request
-   * @param \BaseHttpResponse $response
+   * @param BaseHttpRequest $request
+   * @param BaseHttpResponse $response
    */
-  public function __construct($request, $response) {
+  public function __construct(BaseHttpRequest $request, BaseHttpResponse $response) {
     $this->request = $request;
     $this->response = $response;
+  }
+
+  /**
+   * @param array $params
+   */
+  public function initialize($params) {
   }
 
   /**

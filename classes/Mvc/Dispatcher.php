@@ -2,6 +2,7 @@
 namespace AppZap\PHPFramework\Mvc;
 
 use AppZap\PHPFramework\Configuration\Configuration;
+use AppZap\PHPFramework\Mvc\BaseHttpHandler;
 
 /**
  * Main entrance class for the framework / application
@@ -59,9 +60,13 @@ class Dispatcher {
         $method = strtolower($_SERVER['REQUEST_METHOD']);
       }
 
+      /** @var BaseHttpHandler $responder */
       $responder = new $responder_class(new BaseHttpRequest($method), new BaseHttpResponse());
 
       if (method_exists($responder, $method)) {
+        if (method_exists($responder, 'initialize')) {
+          $responder->initialize($params);
+        }
         $responder->$method($params);
       } else {
         throw new InvalidHttpResponderException('Method ' . $method . ' is not valid for ' . $responder_class);
