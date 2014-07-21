@@ -39,3 +39,17 @@ Inside this directory you should use this structure:
 * `routes.php` - Define a `$routes` array with regular expression routes mapping to handler class names
 * `settings.ini` - Your configuration
 * `settings_local.ini` - Optionally overwrite your configuration
+
+# Configuration
+At the moment the PHPFramework supports configuration via ini files. Use `setting.ini` and `setting_local.ini` in your
+project folder.
+Use the following lines in your index.php to initialize configuration via ini files:
+
+    $application_directory = dirname(__FILE__) . '/myproject/';
+    \AppZap\PHPFramework\Configuration\Parser\IniParser::init($application_directory);
+
+Whereever you need to access the Configuration put
+
+    use AppZap\PHPFramework\Configuration\Configuration;
+
+on top of the file and use `Configuration::get()` or `Configuration::getSection()` in your code.
