@@ -173,7 +173,8 @@ class BaseHttpResponse {
       }
     }
 
-    $template = $twig->loadTemplate($template_name . '.html');
+    $template_file_extension = Configuration::get('phpframework', 'template_file_extension') ?: 'twig';
+    $template = $twig->loadTemplate($template_name . '.' . $template_file_extension);
 
     return $template;
   }
