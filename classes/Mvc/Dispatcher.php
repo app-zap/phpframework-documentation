@@ -50,6 +50,11 @@ class Dispatcher {
     $request = new BaseHttpRequest($request_method);
     $response = new BaseHttpResponse();
 
+    $default_template_name = $this->determineDefaultTemplateName($responder_class);
+    if ($default_template_name) {
+      $response->set_template_name($default_template_name);
+    }
+
     /** @var BaseHttpHandler $request_handler */
     $request_handler = new $responder_class($request, $response);
 
@@ -58,7 +63,11 @@ class Dispatcher {
     }
 
     $request_handler->initialize($parameters);
-    $request_handler->$request_method($parameters);
+    $output = $request_handler->$request_method($parameters);
+    if (is_null($output)) {
+      $output = $response->render();
+    }
+    echo $output;
   }
 
   /**
@@ -72,6 +81,16 @@ class Dispatcher {
       $method = strtolower($_SERVER['REQUEST_METHOD']);
       return $method;
     }
+  }
+
+  /**
+   * @param $responder_class
+   */
+  protected function determineDefaultTemplateName($responder_class) {
+    if (preg_match('|\\\\([a-zA-Z0-9]{2,50})Handler$|', $responder_class, $matches)) {
+      return $matches[1];
+    }
+    return NULL;
   }
 
 }

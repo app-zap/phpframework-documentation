@@ -5,10 +5,49 @@ use AppZap\PHPFramework\Configuration\Configuration;
 
 class BaseHttpResponse {
 
+  /**
+   * @var string
+   */
+  protected $template_name;
+
+  /**
+   * @var \Twig_Environment
+   */
+  protected $rendering_engine;
+
   protected $template_vars = [];
   protected $headers = [];
   protected $output_filters = [];
   protected $output_functions = [];
+
+  public function __construct() {
+    \Twig_Autoloader::register();
+    $loader = new \Twig_Loader_Filesystem(Configuration::get('application', 'templates_directory'));
+    $this->rendering_engine = new \Twig_Environment($loader);
+
+    if(!empty($this->output_functions)) {
+      foreach($this->output_functions as $key => $value) {
+        if(is_array($value)) {
+          $this->rendering_engine->addFunction($key, new \Twig_Function_Function($value[0] .'::'. $value[1]));
+        } else {
+          $this->rendering_engine->addFunction($key, new \Twig_Function_Function($value));
+        }
+      }
+    }
+
+    if(!empty($this->output_filters)) {
+      foreach($this->output_filters as $key => $value) {
+        $this->rendering_engine->addFilter(new \Twig_SimpleFilter($key, $value));
+      }
+    }
+  }
+
+  /**
+   * @param $template_name
+   */
+  public function set_template_name($template_name) {
+    $this->template_name = $template_name;
+  }
 
   /**
    * Sets a header to the specified value for delivery when the page is rendered
@@ -50,20 +89,10 @@ class BaseHttpResponse {
    * @param string $template_name Name of the template in the template directory without extension
    * @return string
    */
-  public function render($template_name) {
-    $template = $this->get_template_environment($template_name);
-    return $template->render($this->template_vars);
-  }
-
-  /**
-   * Renders the template with the previously defined variables and sends the result to stdout
-   *
-   * @param string $template_name Name of the template in the template directory without extension
-   */
-  public function display($template_name) {
+  public function render($template_name = NULL) {
     $this->send_headers();
     $template = $this->get_template_environment($template_name);
-    $template->display($this->template_vars);
+    return $template->render($this->template_vars);
   }
 
   /**
@@ -152,29 +181,12 @@ class BaseHttpResponse {
    * @param string $template_name
    * @return \Twig_TemplateInterface
    */
-  protected function get_template_environment($template_name) {
-    \Twig_Autoloader::register();
-    $loader = new \Twig_Loader_Filesystem(Configuration::get('application', 'templates_directory'));
-    $twig = new \Twig_Environment($loader);
-
-    if(!empty($this->output_functions)) {
-      foreach($this->output_functions as $key => $value) {
-        if(is_array($value)) {
-          $twig->addFunction($key, new \Twig_Function_Function($value[0] .'::'. $value[1]));
-        } else {
-          $twig->addFunction($key, new \Twig_Function_Function($value));
-        }
-      }
+  protected function get_template_environment($template_name = NULL) {
+    if (is_null($template_name)) {
+      $template_name = $this->template_name;
     }
-
-    if(!empty($this->output_filters)) {
-      foreach($this->output_filters as $key => $value) {
-        $twig->addFilter(new \Twig_SimpleFilter($key, $value));
-      }
-    }
-
     $template_file_extension = Configuration::get('phpframework', 'template_file_extension') ?: 'twig';
-    $template = $twig->loadTemplate($template_name . '.' . $template_file_extension);
+    $template = $this->rendering_engine->loadTemplate($template_name . '.' . $template_file_extension);
 
     return $template;
   }
