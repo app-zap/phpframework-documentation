@@ -1,8 +1,8 @@
 <?php
 namespace AppZap\PHPFramework\Mvc;
 
+use AppZap\PHPFramework\Cache\CacheFactory;
 use AppZap\PHPFramework\Configuration\Configuration;
-use AppZap\PHPFramework\Mvc\BaseHttpHandler;
 
 /**
  * Main entrance class for the framework / application
@@ -10,6 +10,11 @@ use AppZap\PHPFramework\Mvc\BaseHttpHandler;
  * @author Knut Ahlers
  */
 class Dispatcher {
+
+  /**
+   * @var \Nette\Caching\Cache
+   */
+  protected $cache;
 
   /**
    * @var string
@@ -20,6 +25,7 @@ class Dispatcher {
    * @throws ApplicationPartMissingException
    */
   public function __construct() {
+    $this->cache = CacheFactory::getCache();
     $application_configuration = Configuration::getSection('application');
 
     if (!is_dir($application_configuration['application_directory'])) {
@@ -33,22 +39,26 @@ class Dispatcher {
 
   public function dispatch($uri) {
 
-    $method = $this->determineRequestMethod();
-    $router = new Router($uri);
+    $request_method = $this->determineRequestMethod();
+    $cache_identifier = 'router_' . $uri . '_' . $request_method;
+    $router = $this->cache->load($cache_identifier, function () use ($uri, $cache_identifier) {
+      return new Router($uri);
+    });
     $responder_class = $router->get_responder_class();
     $parameters = $router->get_parameters();
 
-    /** @var BaseHttpHandler $responder */
-    $responder = new $responder_class(new BaseHttpRequest($method), new BaseHttpResponse());
+    $request = new BaseHttpRequest($request_method);
+    $response = new BaseHttpResponse();
 
-    if (!method_exists($responder, $method)) {
-      throw new InvalidHttpResponderException('Method ' . $method . ' is not valid for ' . $responder_class);
+    /** @var BaseHttpHandler $request_handler */
+    $request_handler = new $responder_class($request, $response);
+
+    if (!method_exists($request_handler, $request_method)) {
+      throw new InvalidHttpResponderException('Method ' . $request_method . ' is not valid for ' . $responder_class);
     }
 
-    if (method_exists($responder, 'initialize')) {
-      $responder->initialize($parameters);
-    }
-    $responder->$method($parameters);
+    $request_handler->initialize($parameters);
+    $request_handler->$request_method($parameters);
   }
 
   /**
