@@ -36,6 +36,8 @@ class Dispatcher {
   }
 
   public function dispatch($uri) {
+
+    $method = $this->determineRequestMethod();
     $routes = include(Configuration::get('application', 'routes_file'));
 
     $uri = preg_replace('/\?.*$/', '', $uri);
@@ -53,26 +55,33 @@ class Dispatcher {
     }
 
     // If the class does not exist throw an exception
-    if (class_exists($responder_class, TRUE)) {
-      if (php_sapi_name() == 'cli') {
-        $method = 'cli';
-      } else {
-        $method = strtolower($_SERVER['REQUEST_METHOD']);
-      }
-
-      /** @var BaseHttpHandler $responder */
-      $responder = new $responder_class(new BaseHttpRequest($method), new BaseHttpResponse());
-
-      if (method_exists($responder, $method)) {
-        if (method_exists($responder, 'initialize')) {
-          $responder->initialize($params);
-        }
-        $responder->$method($params);
-      } else {
-        throw new InvalidHttpResponderException('Method ' . $method . ' is not valid for ' . $responder_class);
-      }
-    } else {
+    if (!class_exists($responder_class, TRUE)) {
       throw new InvalidHttpResponderException('Handler class ' . $responder_class . ' for uri ' . $uri . ' not found!');
+    }
+
+    /** @var BaseHttpHandler $responder */
+    $responder = new $responder_class(new BaseHttpRequest($method), new BaseHttpResponse());
+
+    if (!method_exists($responder, $method)) {
+      throw new InvalidHttpResponderException('Method ' . $method . ' is not valid for ' . $responder_class);
+    }
+
+    if (method_exists($responder, 'initialize')) {
+      $responder->initialize($params);
+    }
+    $responder->$method($params);
+  }
+
+  /**
+   * @return string
+   */
+  protected function determineRequestMethod() {
+    if (php_sapi_name() == 'cli') {
+      $method = 'cli';
+      return $method;
+    } else {
+      $method = strtolower($_SERVER['REQUEST_METHOD']);
+      return $method;
     }
   }
 
