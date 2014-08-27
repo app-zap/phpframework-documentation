@@ -19,7 +19,7 @@ abstract class AuthenticationService {
    *
    */
   public function __construct() {
-    $session_class = Configuration::get('application', 'session.class');
+    $session_class = Configuration::get('application', 'session.class', \AppZap\PHPFramework\Authentication\BasePHPSession::class);
     if (!class_exists($session_class, TRUE)) {
       $session_class = $this->default_session_class_namespace . '\\' . $session_class;
     }

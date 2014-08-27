@@ -22,6 +22,7 @@ class IniParser {
       $overwrite_file_path = $application_directory . 'settings_local.ini';
     }
     self::parse($config_file_path, $overwrite_file_path);
+    Configuration::set('application', 'application', $application);
     Configuration::set('application', 'application_directory', $application_directory);
     Configuration::set('application', 'migration_directory', $application_directory . '_sql/');
     Configuration::set('application', 'routes_file', $application_directory . 'routes.php');
