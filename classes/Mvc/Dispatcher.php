@@ -26,10 +26,6 @@ class Dispatcher {
       throw new ApplicationPartMissingException('Application directory "' . $application_configuration['application_directory'] . '" does not exist.');
     }
 
-    if (!is_readable($application_configuration['routes_file'])) {
-      throw new ApplicationPartMissingException('Routes file "' . $application_configuration['routes_file'] . '" does not exist.');
-    }
-
     if (!is_dir($application_configuration['templates_directory'])) {
       throw new ApplicationPartMissingException('Template directory "' . $application_configuration['templates_directory'] . '" does not exist.');
     }

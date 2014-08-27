@@ -31,10 +31,16 @@ class Router {
 
   /**
    * @param $uri
+   * @throws ApplicationPartMissingException
    * @throws InvalidHttpResponderException
    */
   public function __construct($uri) {
-    $routes = include(Configuration::get('application', 'routes_file'));
+    $application_configuration = Configuration::getSection('application');
+    if (!is_readable($application_configuration['routes_file'])) {
+      throw new ApplicationPartMissingException('Routes file "' . $application_configuration['routes_file'] . '" does not exist.');
+    }
+
+    $routes = include($application_configuration['routes_file']);
 
     $uri = preg_replace('/\?.*$/', '', $uri);
 
