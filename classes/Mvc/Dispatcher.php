@@ -3,6 +3,7 @@ namespace AppZap\PHPFramework\Mvc;
 
 use AppZap\PHPFramework\Cache\CacheFactory;
 use AppZap\PHPFramework\Configuration\Configuration;
+use Nette\Caching\Cache;
 
 /**
  * Main entrance class for the framework / application
@@ -40,33 +41,44 @@ class Dispatcher {
   public function dispatch($uri) {
 
     $request_method = $this->determineRequestMethod();
-    $cache_identifier = 'router_' . $uri . '_' . $request_method;
-    $router = $this->cache->load($cache_identifier, function () use ($uri, $cache_identifier) {
-      return new Router($uri);
-    });
-    $responder_class = $router->get_responder_class();
-    $parameters = $router->get_parameters();
-
-    $request = new BaseHttpRequest($request_method);
-    $response = new BaseHttpResponse();
-
-    $default_template_name = $this->determineDefaultTemplateName($responder_class);
-    if ($default_template_name) {
-      $response->set_template_name($default_template_name);
+    $output = NULL;
+    if ($request_method === 'get') {
+      $output = $this->cache->load('output_' . $uri);
     }
 
-    /** @var BaseHttpHandler $request_handler */
-    $request_handler = new $responder_class($request, $response);
-
-    if (!method_exists($request_handler, $request_method)) {
-      throw new InvalidHttpResponderException('Method ' . $request_method . ' is not valid for ' . $responder_class);
-    }
-
-    $request_handler->initialize($parameters);
-    $output = $request_handler->$request_method($parameters);
     if (is_null($output)) {
-      $output = $response->render();
+      $router = $this->getRouter($uri);
+      $responder_class = $router->get_responder_class();
+      $parameters = $router->get_parameters();
+
+      $request = new BaseHttpRequest($request_method);
+      $response = new BaseHttpResponse();
+
+      $default_template_name = $this->determineDefaultTemplateName($responder_class);
+      if ($default_template_name) {
+        $response->set_template_name($default_template_name);
+      }
+
+      /** @var BaseHttpHandler $request_handler */
+      $request_handler = new $responder_class($request, $response);
+
+      if (!method_exists($request_handler, $request_method)) {
+        throw new InvalidHttpResponderException('Method ' . $request_method . ' is not valid for ' . $responder_class);
+      }
+
+      $request_handler->initialize($parameters);
+      $output = $request_handler->$request_method($parameters);
+      if (is_null($output)) {
+        $output = $response->render();
+      }
+    };
+
+    if (Configuration::get('cache', 'full_output_cache', FALSE) && $request_method === 'get') {
+      $this->cache->save('output_' . $uri, $output, [
+        Cache::EXPIRE => Configuration::get('cache', 'full_output_expiration', '20 Minutes'),
+      ]);
     }
+
     echo $output;
   }
 
@@ -91,6 +103,18 @@ class Dispatcher {
       return $matches[1];
     }
     return NULL;
+  }
+
+  /**
+   * @param $uri
+   * @return mixed|NULL
+   */
+  protected function getRouter($uri) {
+    $request_method = $this->determineRequestMethod();
+    $router = $this->cache->load('router_' . $uri . '_' . $request_method, function () use ($uri) {
+      return new Router($uri);
+    });
+    return $router;
   }
 
 }
