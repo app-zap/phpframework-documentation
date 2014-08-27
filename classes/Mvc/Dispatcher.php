@@ -38,26 +38,9 @@ class Dispatcher {
   public function dispatch($uri) {
 
     $method = $this->determineRequestMethod();
-    $routes = include(Configuration::get('application', 'routes_file'));
-
-    $uri = preg_replace('/\?.*$/', '', $uri);
-
-    $responder_class = NULL;
-    $params = [];
-    foreach ($routes as $regex => $class) {
-      if (preg_match($regex, $uri, $matches)) {
-        $responder_class = $class;
-        for ($i = 1; $i < count($matches); $i++) {
-          $params[] = $matches[$i];
-        }
-        break;
-      }
-    }
-
-    // If the class does not exist throw an exception
-    if (!class_exists($responder_class, TRUE)) {
-      throw new InvalidHttpResponderException('Handler class ' . $responder_class . ' for uri ' . $uri . ' not found!');
-    }
+    $router = new Router($uri);
+    $responder_class = $router->get_responder_class();
+    $parameters = $router->get_parameters();
 
     /** @var BaseHttpHandler $responder */
     $responder = new $responder_class(new BaseHttpRequest($method), new BaseHttpResponse());
@@ -67,9 +50,9 @@ class Dispatcher {
     }
 
     if (method_exists($responder, 'initialize')) {
-      $responder->initialize($params);
+      $responder->initialize($parameters);
     }
-    $responder->$method($params);
+    $responder->$method($parameters);
   }
 
   /**
