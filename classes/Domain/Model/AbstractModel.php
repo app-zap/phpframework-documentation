@@ -1,12 +1,28 @@
 <?php
 namespace AppZap\PHPFramework\Domain\Model;
 
+use AppZap\PHPFramework\Property\PropertyMapper;
+
 abstract class AbstractModel {
 
   /**
    * @var int
    */
   protected $id;
+
+  /**
+   * @var PropertyMapper
+   */
+  protected $propertyMapper;
+
+  /**
+   * @var array
+   */
+  protected $_relations = [];
+
+  public function __construct() {
+    $this->propertyMapper = new PropertyMapper();
+  }
 
   /**
    * @return int
@@ -20,6 +36,13 @@ abstract class AbstractModel {
    */
   public function set_id($id) {
     $this->id = $id;
+  }
+
+  /**
+   * @return array
+   */
+  public function get_mapping_relations() {
+    return $this->_relations;
   }
 
 }
