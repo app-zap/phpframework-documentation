@@ -87,7 +87,27 @@ abstract class AbstractDomainRepository {
    * @return AbstractModel
    */
   protected function query_one($where) {
+    foreach ($where as $property => $value) {
+      $where[$property] = $this->entity_mapper->scalarize_value($value);
+    }
     return $this->record_to_object($this->db->row($this->tablename, '*', $where));
+  }
+
+  /**
+   * @param $where
+   * @return AbstractModelCollection
+   */
+  protected function query_many($where) {
+    foreach ($where as $property => $value) {
+      $where[$property] = $this->entity_mapper->scalarize_value($value);
+    }
+    $collection_classname = Nomenclature::repositoryclassname_to_collectionclassname(get_called_class());
+    /** @var AbstractModelCollection $collection */
+    $collection = new $collection_classname();
+    while ($record = $this->db->select($this->tablename, '*', $where)) {
+      $collection->set_item($this->record_to_object($record));
+    }
+    return $collection;
   }
 
   /**

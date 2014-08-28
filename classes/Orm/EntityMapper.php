@@ -36,15 +36,24 @@ class EntityMapper {
       if (substr($method_name, 0, 4) == 'get_') {
         $field_name = substr($method_name, 4);
         $value = call_user_func([$object, $method_name]);
-        if ($value instanceof AbstractModel) {
-          $value = $value->get_id();
-        } elseif ($value instanceof \DateTime) {
-          $value = $value->getTimestamp();
-        }
+        $value = $this->scalarize_value($value);
         $record[$field_name] = $value;
       }
     }
     return $record;
+  }
+
+  /**
+   * @param $value
+   * @return int
+   */
+  public function scalarize_value($value) {
+    if ($value instanceof AbstractModel) {
+      $value = $value->get_id();
+    } elseif ($value instanceof \DateTime) {
+      $value = $value->getTimestamp();
+    }
+    return $value;
   }
 
 }
