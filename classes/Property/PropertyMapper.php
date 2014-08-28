@@ -1,6 +1,8 @@
 <?php
 namespace AppZap\PHPFramework\Property;
 
+use AppZap\PHPFramework\Nomenclature;
+
 class PropertyMapper {
 
   /**
@@ -11,12 +13,22 @@ class PropertyMapper {
    */
   public function map($source, $target) {
 
-    switch ($target) {
-      case \DateTime::class:
-        $value = $this->mapToDateTime($source);
-        break;
-      default:
-        throw new \Exception('No conversion found for type "' . $target . '"');
+    $original_target = $target;
+    $value = NULL;
+    while(TRUE) {
+      switch ($target) {
+        case \AppZap\PHPFramework\Domain\Model\AbstractModel::class:
+          $value = $this->mapToModel($source, $original_target);
+          break(2);
+        case \DateTime::class:
+          $value = $this->mapToDateTime($source);
+          break(2);
+        default:
+          $target = get_parent_class($target);
+          if ($target === FALSE) {
+            throw new \Exception('No conversion found for type "' . $original_target . '"');
+          }
+      }
     }
 
     return $value;
@@ -36,6 +48,18 @@ class PropertyMapper {
     } else {
       return $source;
     }
+  }
+
+  /**
+   * @param int $source
+   * @param string $target_class
+   * @return \AppZap\PHPFramework\Domain\Model\AbstractModel
+   */
+  protected function mapToModel($source, $target_class) {
+    $repository_classname = Nomenclature::modelclassname_to_repositoryclassname($target_class);
+    /** @var \AppZap\PHPFramework\Domain\Repository\AbstractDomainRepository $repository */
+    $repository = $repository_classname::get_instance();
+    return $repository->find_by_id((int) $source);
   }
 
 }

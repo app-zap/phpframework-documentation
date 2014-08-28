@@ -35,7 +35,7 @@ abstract class AbstractModel {
    * @param int $id
    */
   public function set_id($id) {
-    $this->id = $id;
+    $this->id = (int) $id;
   }
 
   /**
