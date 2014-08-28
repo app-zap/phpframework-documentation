@@ -15,11 +15,6 @@ abstract class AbstractModel {
    */
   protected $propertyMapper;
 
-  /**
-   * @var array
-   */
-  protected $_relations = [];
-
   public function __construct() {
     $this->propertyMapper = new PropertyMapper();
   }
@@ -36,13 +31,6 @@ abstract class AbstractModel {
    */
   public function set_id($id) {
     $this->id = (int) $id;
-  }
-
-  /**
-   * @return array
-   */
-  public function _get_mapping_relations() {
-    return $this->_relations;
   }
 
 }
