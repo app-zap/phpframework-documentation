@@ -137,6 +137,8 @@ class MySQL {
    *
    * @param string $sql Finally escaped SQL statement
    * @return resource Result data of the query
+   * @throws DBConnectionException
+   * @throws DBQueryException
    */
   public function execute($sql) {
     if ($this->get_connection() === NULL) {
@@ -174,7 +176,7 @@ class MySQL {
   /**
    * Returns a row from the result set
    *
-   * @param resource $result Resultset from query-function
+   * @param \mysqli_result $result Resultset from query-function
    * @return array
    */
   public function fetch($result) {
@@ -444,6 +446,7 @@ class MySQL {
    * Escape values
    *
    * @param mixed $value
+   * @return string
    */
   public function escape($value) {
     $value = stripslashes($value);

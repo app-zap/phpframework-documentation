@@ -1,6 +1,7 @@
 <?php
 namespace AppZap\PHPFramework\Orm;
 
+use AppZap\PHPFramework\Domain\Model\AbstractModel;
 use AppZap\PHPFramework\Nomenclature;
 
 class PropertyMapper {
@@ -19,7 +20,7 @@ class PropertyMapper {
     $value = NULL;
     while(TRUE) {
       switch ($target) {
-        case \AppZap\PHPFramework\Domain\Model\AbstractModel::class:
+        case AbstractModel::class:
           $value = $this->mapToModel($source, $original_target);
           break(2);
         case \DateTime::class:
@@ -53,7 +54,7 @@ class PropertyMapper {
   /**
    * @param int $source
    * @param string $target_class
-   * @return \AppZap\PHPFramework\Domain\Model\AbstractModel
+   * @return AbstractModel
    */
   protected function mapToModel($source, $target_class) {
     $repository_classname = Nomenclature::modelclassname_to_repositoryclassname($target_class);

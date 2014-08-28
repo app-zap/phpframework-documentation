@@ -2,8 +2,6 @@
 namespace AppZap\PHPFramework\Orm;
 
 use AppZap\PHPFramework\Domain\Model\AbstractModel;
-use AppZap\PHPFramework\Domain\Repository\AbstractDomainRepository;
-use AppZap\PHPFramework\Nomenclature;
 use AppZap\PHPFramework\Singleton;
 
 class EntityMapper {

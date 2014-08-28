@@ -97,6 +97,7 @@ class Dispatcher {
 
   /**
    * @param $responder_class
+   * @return string
    */
   protected function determineDefaultTemplateName($responder_class) {
     if (preg_match('|\\\\([a-zA-Z0-9]{2,50})Handler$|', $responder_class, $matches)) {

@@ -3,6 +3,7 @@ namespace AppZap\PHPFramework\Cache;
 
 use AppZap\PHPFramework\Configuration\Configuration;
 use AppZap\PHPFramework\Mvc\ApplicationPartMissingException;
+use Nette\Caching\Cache;
 use Nette\Caching\Storages\DevNullStorage;
 use Nette\Caching\Storages\FileJournal;
 use Nette\Caching\Storages\FileStorage;
@@ -13,15 +14,15 @@ use Nette\Caching\Storages\FileStorage;
 class CacheFactory {
 
   /**
-   * @var \Nette\Caching\Cache
+   * @var Cache
    */
   protected static $cache;
 
   /**
-   * @return \Nette\Caching\Cache
+   * @return Cache
    */
   public static function getCache() {
-    if (!self::$cache instanceof \Nette\Caching\Cache) {
+    if (!self::$cache instanceof Cache) {
       $cacheSettings = Configuration::getSection('cache');
       if ($cacheSettings['enable']) {
         if (isset($cacheSettings['cache_folder'])) {
@@ -40,7 +41,7 @@ class CacheFactory {
       } else {
         $storage = new DevNullStorage();
       }
-      self::$cache = new \Nette\Caching\Cache($storage, Configuration::get('application', 'application'));
+      self::$cache = new Cache($storage, Configuration::get('application', 'application'));
     }
     return self::$cache;
   }
