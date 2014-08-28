@@ -78,7 +78,7 @@ use Singleton;
         call_user_func([$object, $setter], $value);
       }
     }
-    foreach ($object->get_mapping_relations() as $property => $collection_classname) {
+    foreach ($object->_get_mapping_relations() as $property => $collection_classname) {
       $setter = 'set_' . $property;
       if (method_exists($object, $setter)) {
         $repository_classname = Nomenclature::collectionclassname_to_repositoryclassname($collection_classname);
@@ -97,9 +97,13 @@ use Singleton;
    */
   protected function object_to_record(AbstractModel $object) {
     $record = [];
+    $mapping_relations = $object->_get_mapping_relations();
     foreach (get_class_methods($object) as $method_name) {
       if (substr($method_name, 0, 4) == 'get_') {
         $field_name = substr($method_name, 4);
+        if (array_key_exists($field_name, $mapping_relations)) {
+          continue;
+        }
         $value = call_user_func([$object, $method_name]);
         if ($value instanceof AbstractModel) {
           $value = $value->get_id();

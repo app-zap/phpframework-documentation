@@ -41,7 +41,7 @@ abstract class AbstractModel {
   /**
    * @return array
    */
-  public function get_mapping_relations() {
+  public function _get_mapping_relations() {
     return $this->_relations;
   }
 
