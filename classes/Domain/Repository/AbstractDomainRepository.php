@@ -104,7 +104,8 @@ abstract class AbstractDomainRepository {
     $collection_classname = Nomenclature::repositoryclassname_to_collectionclassname(get_called_class());
     /** @var AbstractModelCollection $collection */
     $collection = new $collection_classname();
-    while ($record = $this->db->select($this->tablename, '*', $where)) {
+    $records = $this->db->select($this->tablename, '*', $where);
+    foreach ($records as $record) {
       $collection->set_item($this->record_to_object($record));
     }
     return $collection;
