@@ -1,5 +1,5 @@
 <?php
-namespace AppZap\PHPFramework\Property;
+namespace AppZap\PHPFramework\Orm;
 
 use AppZap\PHPFramework\Nomenclature;
 
@@ -12,7 +12,9 @@ class PropertyMapper {
    * @throws \Exception
    */
   public function map($source, $target) {
-
+    if ($source instanceof $target) {
+      return $source;
+    }
     $original_target = $target;
     $value = NULL;
     while(TRUE) {
@@ -30,9 +32,7 @@ class PropertyMapper {
           }
       }
     }
-
     return $value;
-
   }
 
   /**

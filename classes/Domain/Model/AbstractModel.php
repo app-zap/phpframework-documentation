@@ -1,7 +1,7 @@
 <?php
 namespace AppZap\PHPFramework\Domain\Model;
 
-use AppZap\PHPFramework\Property\PropertyMapper;
+use AppZap\PHPFramework\Orm\PropertyMapper;
 
 abstract class AbstractModel {
 
