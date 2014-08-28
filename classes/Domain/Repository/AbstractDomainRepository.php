@@ -121,6 +121,15 @@ abstract class AbstractDomainRepository {
   }
 
   /**
+   * @param $where
+   * @return AbstractModel
+   */
+  protected function query_one($where) {
+    $table = $this->determine_tablename();
+    return $this->record_to_object($this->db->row($table, '*', $where));
+  }
+
+  /**
    * @param $record
    * @return AbstractModel
    */
