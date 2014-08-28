@@ -27,7 +27,7 @@ abstract class AuthenticationService {
       $this->session = new $session_class();
       if(!($this->session instanceof BaseSessionInterface)) {
         $this->session = null;
-        throw new BaseSessionException($session_class . ' is not a instance of AppZap\PHPFramework\Authentication\BaseSessionInterface');
+        throw new BaseSessionException($session_class . ' is not an instance of AppZap\PHPFramework\Authentication\BaseSessionInterface');
       }
     } else {
       throw new BaseSessionException('Session class ' . $session_class . ' not found');
