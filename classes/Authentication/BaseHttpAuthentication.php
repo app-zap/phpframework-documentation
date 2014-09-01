@@ -2,6 +2,7 @@
 namespace AppZap\PHPFramework\Authentication;
 
 use AppZap\PHPFramework\Configuration\Configuration;
+use AppZap\PHPFramework\Mvc\HttpStatus;
 
 class BaseHttpAuthentication {
 
@@ -31,7 +32,7 @@ class BaseHttpAuthentication {
   public function check_authentication() {
     $http_authentication = Configuration::getSection('http_authentication');
     if (is_array($http_authentication) && !$this->is_authenticated()) {
-      header('HTTP/1.0 401 Unauthorized');
+      HttpStatus::set_status(HttpStatus::STATUS_401_UNAUTHORIZED);
       header('WWW-Authenticate: Basic realm="Login"');
       echo('Login required!');
       exit;

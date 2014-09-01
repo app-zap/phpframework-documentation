@@ -1,6 +1,8 @@
 <?php
 namespace AppZap\PHPFramework;
 
+use AppZap\PHPFramework\Mvc\HttpStatus;
+
 class BaseExceptionVisualizer {
   private static $display_template = null;
 
@@ -32,7 +34,7 @@ class BaseExceptionVisualizer {
    */
   public static function render_exception($exception) {
     if(!headers_sent()) {
-      header('HTTP/1.1 500 Internal Server Error');
+      HttpStatus::set_status(HttpStatus::STATUS_500_INTERNAL_SERVER_ERROR);
       header('Cache-Control: no-cache');
     }
     $template_vars = self::generate_template_vars($exception);
