@@ -62,14 +62,18 @@ class Dispatcher {
       /** @var BaseHttpHandler $request_handler */
       $request_handler = new $responder_class($request, $response);
 
-      if (!method_exists($request_handler, $request_method)) {
-        throw new InvalidHttpResponderException('Method ' . $request_method . ' is not valid for ' . $responder_class);
-      }
-
-      $request_handler->initialize($parameters);
-      $output = $request_handler->$request_method($parameters);
-      if (is_null($output)) {
-        $output = $response->render();
+      try {
+        if (!method_exists($request_handler, $request_method)) {
+          throw new MethodNotSupportedException('Method ' . $request_method . ' is not valid for ' . $responder_class);
+        }
+        $request_handler->initialize($parameters);
+        $output = $request_handler->$request_method($parameters);
+        if (is_null($output)) {
+          $output = $response->render();
+        }
+      } catch(MethodNotImplementedException $e) {
+        header("HTTP/1.0 405 Method Not Allowed");
+        die();
       }
     };
 
