@@ -6,14 +6,14 @@ use AppZap\PHPFramework\Configuration\Configuration;
 class BaseHttpResponse {
 
   /**
-   * @var string
-   */
-  protected $template_name;
-
-  /**
    * @var \Twig_Environment
    */
   protected $rendering_engine;
+
+  /**
+   * @var string
+   */
+  protected $template_name;
 
   protected $template_vars = [];
   protected $headers = [];
@@ -133,22 +133,14 @@ class BaseHttpResponse {
    * Sets the location header including the HTTP status header for redirects
    *
    * @param string $target The target to use in location header
-   * @param int $http_code The HTTP code to use (301 = Moved Permanent, 302 = Moved Temporary, 303 = See Other)
+   * @param int $http_code The HTTP code to use
+   * @see \AppZap\PHPFramework\Mvc\HttpStatus
    */
-  public function redirect($target, $http_code = 302) {
-    $this->header('Location', $target);
-    switch($http_code) {
-      case 301:
-        header("HTTP/1.1 301 Moved Permanently");
-        break;
-      case 302:
-        header("HTTP/1.1 302 Moved Temporarily");
-        break;
-      case 303:
-        header("HTTP/1.1 303 See Other");
-        break;
-    }
-    $this->send_headers();
+  public function redirect($target, $http_code = HttpStatus::STATUS_307_TEMPORARY_REDIRECT) {
+    HttpStatus::set_status($http_code, [
+      HttpStatus::HEADER_FIELD_LOCATION => $target
+    ]);
+    HttpStatus::send_headers();
   }
 
   /**

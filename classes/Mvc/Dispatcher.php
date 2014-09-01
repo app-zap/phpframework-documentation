@@ -71,8 +71,18 @@ class Dispatcher {
         if (is_null($output)) {
           $output = $response->render();
         }
-      } catch(MethodNotImplementedException $e) {
-        header("HTTP/1.0 405 Method Not Allowed");
+      } catch(MethodNotSupportedException $e) {
+        $methods = ['options', 'get', 'head', 'post', 'put', 'delete'];
+        $implemented_methods = [];
+        foreach($methods as $method) {
+          if (method_exists($request_handler, $method)) {
+            $implemented_methods[] = $method;
+          }
+        }
+        HttpStatus::set_status(HttpStatus::STATUS_405_METHOD_NOT_ALLOWED, [
+          HttpStatus::HEADER_FIELD_ALLOW => join(', ', $implemented_methods)
+        ]);
+        HttpStatus::send_headers();
         die();
       }
     };
