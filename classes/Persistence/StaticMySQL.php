@@ -9,7 +9,7 @@ class StaticMySQL {
   /**
    * @var MySQL
    */
-  private static $instance;
+  protected static $instance;
 
   /**
    * @return MySQL

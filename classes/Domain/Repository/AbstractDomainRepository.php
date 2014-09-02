@@ -75,7 +75,8 @@ abstract class AbstractDomainRepository {
   public function save(AbstractModel $object) {
     $record = $this->entity_mapper->object_to_record($object);
     if ($record['id']) {
-      $this->db->update($this->tablename, $record, 'id = ' . (int)$record['id']);
+      $where = ['id' => (int)$record['id']];
+      $this->db->update($this->tablename, $record, $where);
     } else {
       $insert_id = $this->db->insert($this->tablename, $record);
       $object->set_id($insert_id);

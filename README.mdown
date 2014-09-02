@@ -8,6 +8,9 @@ Since the fork wide parts of the system were rewritten or heavily modified. Here
 * Cache built upon [Nette Caching](https://github.com/nette/caching)
 * Support for Domain Driven Design, including Domain Model Objects, Repositories, Collections and an [ORM](https://en.wikipedia.org/wiki/Object-relational_mapping) mechanism.
 
+The fork is not compatible to the original framework and not compatible to its own previous versions.
+After the next release (2.0) we'll switch to a more backwards compatible development.
+
 # Requirements
 
 Currently the best supported setup for this framework is:

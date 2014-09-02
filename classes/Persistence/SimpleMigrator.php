@@ -53,7 +53,7 @@ class SimpleMigrator {
     if($this->db->count('migration_ver') < 1) {
       $this->db->insert('migration_ver', $data);
     } else {
-      $this->db->update('migration_ver', $data, '1 = 1');
+      $this->db->update('migration_ver', $data, ['1' => '1']);
     }
   }
 

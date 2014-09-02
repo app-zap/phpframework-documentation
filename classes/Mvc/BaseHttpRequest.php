@@ -83,7 +83,7 @@ class BaseHttpRequest {
    * @throws ValueSourceNotSupportedException when the name of the source is unsupported
    * @throws ParameterNotFoundException when the parameter is not found in the source to avoid collision with other value types
    */
-  private function read_request_parameter($parameter_name, $value_source) {
+  protected function read_request_parameter($parameter_name, $value_source) {
     $source = null;
     if($value_source == 'get') {
       $source = &$_GET;
