@@ -16,7 +16,7 @@ After the next release (2.0) we'll switch to a more backwards compatible develop
 Currently the best supported setup for this framework is:
 
 - Debian / Ubuntu Linux
-- PHP 5.4.0 or greater
+- PHP 5.5.0 or greater
 - Apache 2.2 with PHP running with mod\_php and mod\_rewrite enabled *(PHP over CGI should also work)*
 - MySQL 5.1 *(but 5.0 or even 4.x should work as well)*
 
