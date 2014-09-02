@@ -3,7 +3,7 @@ namespace AppZap\PHPFramework\Mvc;
 
 use AppZap\PHPFramework\Cache\CacheFactory;
 use AppZap\PHPFramework\Configuration\Configuration;
-use Nette\Caching\Cache;
+use AppZap\PHPFramework\Cache\Cache;
 
 /**
  * Main entrance class for the framework / application

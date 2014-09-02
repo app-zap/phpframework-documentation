@@ -3,7 +3,6 @@ namespace AppZap\PHPFramework\Cache;
 
 use AppZap\PHPFramework\Configuration\Configuration;
 use AppZap\PHPFramework\Mvc\ApplicationPartMissingException;
-use Nette\Caching\Cache;
 use Nette\Caching\Storages\DevNullStorage;
 use Nette\Caching\Storages\FileJournal;
 use Nette\Caching\Storages\FileStorage;
