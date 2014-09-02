@@ -12,14 +12,12 @@ class StaticMySQL {
   private static $instance;
 
   /**
-   * @param array $config
-   * @param string $connection_target
    * @return MySQL
    * @throws DBConnectionException
    */
-  public static function getInstance($config = NULL, $connection_target = 'default') {
+  public static function getInstance() {
     if(!self::$instance) {
-      self::$instance = new MySQL($config, $connection_target);
+      self::$instance = new MySQL();
       self::$instance->connect();
     }
     return self::$instance;

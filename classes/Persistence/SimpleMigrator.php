@@ -8,7 +8,7 @@ class SimpleMigrator {
   /**
    * @var MySQL
    */
-  protected $connection;
+  protected $db;
 
   /**
    * @var string
@@ -21,7 +21,7 @@ class SimpleMigrator {
   public function __construct() {
     $migration_directory = Configuration::get('application', 'migration_directory');
 
-    $this->connection = new MySQL();
+    $this->db = StaticMySQL::getInstance();
     $this->migration_directory = $migration_directory;
 
     if(!is_dir($migration_directory)) {
@@ -33,27 +33,27 @@ class SimpleMigrator {
    * @return int
    */
   protected function get_current_migration_version() {
-    if(count($this->connection->query("SHOW TABLES LIKE 'migration_ver'")) < 1) {
+    if(count($this->db->query("SHOW TABLES LIKE 'migration_ver'")) < 1) {
       return 0;
     }
 
-    return $this->connection->field('migration_ver', 'version');
+    return $this->db->field('migration_ver', 'version');
   }
 
   /**
    * @param int $version
    */
   protected function set_current_migration_version($version) {
-    if(count($this->connection->query("SHOW TABLES LIKE 'migration_ver'")) < 1) {
+    if(count($this->db->query("SHOW TABLES LIKE 'migration_ver'")) < 1) {
       $sql = "CREATE TABLE IF NOT EXISTS `migration_ver` (`version` int(11) NOT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;";
-      $this->connection->execute($sql);
+      $this->db->execute($sql);
     }
 
     $data = ['version' => $version];
-    if($this->connection->count('migration_ver') < 1) {
-      $this->connection->insert('migration_ver', $data);
+    if($this->db->count('migration_ver') < 1) {
+      $this->db->insert('migration_ver', $data);
     } else {
-      $this->connection->update('migration_ver', $data, '1 = 1');
+      $this->db->update('migration_ver', $data, '1 = 1');
     }
   }
 
@@ -62,8 +62,8 @@ class SimpleMigrator {
    * @throws SimpleMigratorException when any command of the file is not executable
    */
   protected function execute_statement_file($filename) {
-    $this->connection->execute('SET autocommit = 0;');
-    $this->connection->execute('START TRANSACTION;');
+    $this->db->execute('SET autocommit = 0;');
+    $this->db->execute('START TRANSACTION;');
 
     $f = @fopen($filename, "r");
     if($f === false) {
@@ -74,16 +74,16 @@ class SimpleMigrator {
     foreach($sqlArray as $stmt) {
       if(strlen($stmt) > 3 && substr(ltrim($stmt), 0, 2) != '/*') {
         try {
-          $this->connection->execute($stmt);
+          $this->db->execute($stmt);
         } catch(DBQueryException $ex) {
-          $this->connection->execute('ROLLBACK;');
+          $this->db->execute('ROLLBACK;');
           throw new SimpleMigratorException('An error occured while executing query of "' . $filename . '": "' . $stmt . '"');
         }
       }
     }
 
-    $this->connection->execute('COMMIT;');
-    $this->connection->execute('SET autocommit = 1;');
+    $this->db->execute('COMMIT;');
+    $this->db->execute('SET autocommit = 1;');
   }
 
   /**
@@ -103,7 +103,6 @@ class SimpleMigrator {
         }
       }
     }
-    $this->connection->connect();
     do {
       $next_migration = $this->get_current_migration_version() + 1;
       if(!array_key_exists($next_migration, $migration_files)) {
@@ -115,7 +114,6 @@ class SimpleMigrator {
         $this->set_current_migration_version($next_migration);
       }
     } while(file_exists($next_path));
-    $this->connection->disconnect();
   }
 
 }
