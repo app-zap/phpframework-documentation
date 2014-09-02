@@ -18,7 +18,6 @@ class StaticMySQL {
   public static function getInstance() {
     if(!self::$instance) {
       self::$instance = new MySQL();
-      self::$instance->connect();
     }
     return self::$instance;
   }

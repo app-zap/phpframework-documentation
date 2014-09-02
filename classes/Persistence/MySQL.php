@@ -84,9 +84,7 @@ class MySQL {
    * @throws DBQueryException
    */
   public function execute($sql) {
-    if (!$this->is_connected()) {
-      throw new DBConnectionException('Database has to be connected before executing this function.', 1409647709);
-    }
+    $this->connect();
     // execute the query
     $result = mysqli_query($this->connection, $sql);
     if ($result === FALSE) {
@@ -101,9 +99,7 @@ class MySQL {
    * @return int
    */
   public function affected() {
-    if (!$this->is_connected()) {
-      throw new DBConnectionException('Database has to be connected before executing this function.', 1409647776);
-    }
+    $this->connect();
     return mysqli_affected_rows($this->connection);
   }
 
@@ -113,9 +109,7 @@ class MySQL {
    * @return int
    */
   public function last_id() {
-    if (!$this->is_connected()) {
-      throw new DBConnectionException('Database has to be connected before executing this function.', 1409647796);
-    }
+    $this->connect();
     return mysqli_insert_id($this->connection);
   }
 
@@ -350,9 +344,7 @@ class MySQL {
    * @return string
    */
   public function escape($value) {
-    if (!$this->is_connected()) {
-      throw new DBConnectionException('Database has to be connected before executing this function.', 1409648148);
-    }
+    $this->connect();
     $value = stripslashes($value);
     return mysqli_real_escape_string($this->connection, (string)$value);
   }
