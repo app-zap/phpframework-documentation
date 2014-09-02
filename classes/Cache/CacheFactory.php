@@ -22,13 +22,8 @@ class CacheFactory {
    */
   public static function getCache() {
     if (!self::$cache instanceof Cache) {
-      $cacheSettings = Configuration::getSection('cache');
-      if ($cacheSettings['enable']) {
-        if (isset($cacheSettings['cache_folder'])) {
-          $cache_folder = $cacheSettings['cache_folder'];
-        } else {
-          $cache_folder = './cache';
-        }
+      if (Configuration::get('cache', 'enable')) {
+        $cache_folder = Configuration::get('cache', 'cache_folder', './cache');
         $cache_folder_path = realpath($cache_folder);
         if (!is_dir($cache_folder_path)) {
           if (!mkdir($cache_folder)) {

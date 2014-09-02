@@ -38,6 +38,9 @@ class Dispatcher {
     }
   }
 
+  /**
+   * @param string $uri
+   */
   public function dispatch($uri) {
 
     $request_method = $this->determineRequestMethod();

@@ -23,7 +23,11 @@ class BaseHttpResponse {
   public function __construct() {
     \Twig_Autoloader::register();
     $loader = new \Twig_Loader_Filesystem(Configuration::get('application', 'templates_directory'));
-    $this->rendering_engine = new \Twig_Environment($loader);
+    $options = [];
+    if (Configuration::get('cache', 'enable')) {
+      $options['cache'] = Configuration::get('cache', 'twig_cache_folder', './cache/twig/');
+    }
+    $this->rendering_engine = new \Twig_Environment($loader, $options);
 
     if(!empty($this->output_functions)) {
       foreach($this->output_functions as $key => $value) {
