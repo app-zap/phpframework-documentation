@@ -62,29 +62,16 @@ class Dispatcher {
       /** @var BaseHttpHandler $request_handler */
       $request_handler = new $responder_class($request, $response);
 
-      try {
-        if (!method_exists($request_handler, $request_method)) {
-          throw new MethodNotSupportedException('Method ' . $request_method . ' is not valid for ' . $responder_class);
-        }
-        $request_handler->initialize($parameters);
-        $output = $request_handler->$request_method($parameters);
-        if (is_null($output)) {
-          $output = $response->render();
-        }
-      } catch(MethodNotSupportedException $e) {
-        $methods = ['options', 'get', 'head', 'post', 'put', 'delete'];
-        $implemented_methods = [];
-        foreach($methods as $method) {
-          if (method_exists($request_handler, $method)) {
-            $implemented_methods[] = $method;
-          }
-        }
-        HttpStatus::set_status(HttpStatus::STATUS_405_METHOD_NOT_ALLOWED, [
-          HttpStatus::HEADER_FIELD_ALLOW => join(', ', $implemented_methods)
-        ]);
-        HttpStatus::send_headers();
-        die();
+      if (!method_exists($request_handler, $request_method)) {
+        // Send HTTP 405 response
+        $request_handler->handle_not_supported_method($request_method);
       }
+      $request_handler->initialize($parameters);
+      $output = $request_handler->$request_method($parameters);
+      if (is_null($output)) {
+        $output = $response->render();
+      }
+
     };
 
     if (Configuration::get('cache', 'full_output_cache', FALSE) && $request_method === 'get') {

@@ -39,6 +39,24 @@ abstract class BaseHttpHandler {
     }
   }
 
+  /**
+   * @throws \Exception
+   */
+  public function handle_not_supported_method() {
+    $methods = ['options', 'get', 'head', 'post', 'put', 'delete'];
+    $implemented_methods = [];
+    foreach($methods as $method) {
+      if (method_exists($this, $method)) {
+        $implemented_methods[] = $method;
+      }
+    }
+    HttpStatus::set_status(HttpStatus::STATUS_405_METHOD_NOT_ALLOWED, [
+        HttpStatus::HEADER_FIELD_ALLOW => join(', ', $implemented_methods)
+    ]);
+    HttpStatus::send_headers();
+    die();
+  }
+
 }
 
 class MethodNotImplementedException extends \Exception {}
