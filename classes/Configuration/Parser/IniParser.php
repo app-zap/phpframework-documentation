@@ -21,6 +21,7 @@ class IniParser {
     if (is_null($overwrite_file_path)) {
       $overwrite_file_path = $application_directory . 'settings_local.ini';
     }
+    Configuration::reset();
     Configuration::set('application', 'application', $application);
     Configuration::set('application', 'application_directory', $application_directory);
     Configuration::set('application', 'migration_directory', $application_directory . '_sql/');
@@ -34,7 +35,6 @@ class IniParser {
    * @param string $overwrite_file
    */
   protected static function parse($config_file, $overwrite_file = NULL) {
-    Configuration::reset();
     if (is_readable($config_file)) {
       self::parse_file($config_file);
     }
