@@ -4,19 +4,22 @@ namespace AppZap\PHPFramework\Persistence;
 use AppZap\PHPFramework\Configuration\Configuration;
 
 class SimpleMigrator {
-  private $connection;
-  private $migration_directory;
 
   /**
-   * @param string $migration_directory Path to the directory with the migration files
-   * @param string $connection_target Name of the database connection to read the settings from
+   * @var MySQL
+   */
+  protected $connection;
+
+  /**
+   * @var string
+   */
+  protected $migration_directory;
+
+  /**
    * @throws SimpleMigratorException
    */
-  public function __construct($migration_directory = NULL, $connection_target = 'default') {
-
-    if (is_null($migration_directory)) {
-      $migration_directory = Configuration::get('application', 'migration_directory');
-    }
+  public function __construct() {
+    $migration_directory = Configuration::get('application', 'migration_directory');
 
     $this->connection = new MySQL();
     $this->migration_directory = $migration_directory;
@@ -83,6 +86,10 @@ class SimpleMigrator {
     $this->connection->execute('SET autocommit = 1;');
   }
 
+  /**
+   * @throws DBConnectionException
+   * @throws SimpleMigratorException
+   */
   public function migrate() {
     $migration_files = [];
     $matches = [];
@@ -96,7 +103,6 @@ class SimpleMigrator {
         }
       }
     }
-
     $this->connection->connect();
     do {
       $next_migration = $this->get_current_migration_version() + 1;

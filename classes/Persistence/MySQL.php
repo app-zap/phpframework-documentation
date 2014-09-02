@@ -9,11 +9,6 @@ use AppZap\PHPFramework\Configuration\Configuration;
 class MySQL {
 
   /**
-   * @var array
-   */
-  public $trace = [];
-
-  /**
    * @var \mysqli
    */
   protected $connection = NULL;
