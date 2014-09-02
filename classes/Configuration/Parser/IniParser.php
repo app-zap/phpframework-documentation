@@ -10,10 +10,12 @@ class IniParser {
    * @throws \Exception
    */
   static public function init($application) {
-    $application_directory = realpath(dirname($_SERVER['SCRIPT_NAME']) . '/' . $application) . '/';
+    $application_directory = dirname($_SERVER['DOCUMENT_ROOT'] . $_SERVER['PHP_SELF']) . '/' . $application;
+    $application_directory = realpath($application_directory);
     if (!is_dir($application_directory)) {
       throw new \Exception('Application folder ' . htmlspecialchars($application_directory) . ' not found');
     }
+    $application_directory .= '/';
     $config_file_path = $application_directory . 'settings.ini';
     $overwrite_file_path = $application_directory . 'settings_local.ini';
     Configuration::reset();
