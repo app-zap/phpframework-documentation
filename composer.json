@@ -2,12 +2,12 @@
   "name": "appzap/phpframework",
   "repositories": [
     {
-    "url": "https://github.com/dbtlr/php-airbrake.git",
-    "type": "git"
+      "url": "https://github.com/airbrake/php-airbrake.git",
+      "type": "git"
     }
   ],
   "require": {
-    "dbtlr/php-airbrake": "dev-master",
+    "airbrake/airbrake-php": "dev-master",
     "nette/caching": "2.2.*",
     "twig/twig": "1.15.*"
   },
