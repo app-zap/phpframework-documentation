@@ -4,3 +4,6 @@ nbproject/
 .project
 docs/html
 .idea
+vendor
+composer.lock
+coverage

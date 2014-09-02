@@ -1,11 +1,5 @@
 {
   "name": "appzap/phpframework",
-  "repositories": [
-    {
-      "url": "https://github.com/airbrake/php-airbrake.git",
-      "type": "git"
-    }
-  ],
   "require": {
     "airbrake/airbrake-php": "dev-master",
     "nette/caching": "2.2.*",
@@ -13,7 +7,8 @@
   },
   "autoload": {
     "psr-4": {
-      "AppZap\\PHPFramework\\": "classes/"
+      "AppZap\\PHPFramework\\": "classes/",
+      "AppZap\\PHPFramework\\Tests\\": "tests/"
     }
   }
 }
