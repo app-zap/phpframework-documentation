@@ -7,20 +7,15 @@ class IniParser {
 
   /**
    * @param string $application
-   * @param string $config_file_path
-   * @param string $overwrite_file_path
+   * @throws \Exception
    */
-  static public function init($application, $config_file_path = NULL, $overwrite_file_path = NULL) {
+  static public function init($application) {
     $application_directory = realpath($_SERVER['HOME'] . '/' . $application) . '/';
     if (!is_dir($application_directory)) {
       throw new \Exception('Application folder ' . htmlspecialchars($application_directory) . ' not found');
     }
-    if (is_null($config_file_path)) {
-      $config_file_path = $application_directory . 'settings.ini';
-    }
-    if (is_null($overwrite_file_path)) {
-      $overwrite_file_path = $application_directory . 'settings_local.ini';
-    }
+    $config_file_path = $application_directory . 'settings.ini';
+    $overwrite_file_path = $application_directory . 'settings_local.ini';
     Configuration::reset();
     Configuration::set('application', 'application', $application);
     Configuration::set('application', 'application_directory', $application_directory);
