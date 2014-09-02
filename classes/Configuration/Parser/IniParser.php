@@ -10,7 +10,7 @@ class IniParser {
    * @throws \Exception
    */
   static public function init($application) {
-    $application_directory = realpath($_SERVER['HOME'] . '/' . $application) . '/';
+    $application_directory = realpath(dirname($_SERVER['SCRIPT_NAME']) . '/' . $application) . '/';
     if (!is_dir($application_directory)) {
       throw new \Exception('Application folder ' . htmlspecialchars($application_directory) . ' not found');
     }
