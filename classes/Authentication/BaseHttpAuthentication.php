@@ -12,7 +12,7 @@ class BaseHttpAuthentication {
   protected $name;
 
   /**
-   * @var string|null
+   * @var string
    */
   protected $password;
 
@@ -29,6 +29,9 @@ class BaseHttpAuthentication {
     }
   }
 
+  /**
+   * @throws \Exception
+   */
   public function check_authentication() {
     $http_authentication = Configuration::getSection('http_authentication');
     if (is_array($http_authentication) && !$this->is_authenticated()) {

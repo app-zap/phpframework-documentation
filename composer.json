@@ -1,8 +1,9 @@
 {
   "name": "appzap/phpframework",
   "require": {
-    "twig/twig": "1.15.*",
-    "nette/caching": "2.2.*"
+    "dbtlr/php-airbrake": "dev-master",
+    "nette/caching": "2.2.*",
+    "twig/twig": "1.15.*"
   },
   "autoload": {
     "psr-4": {
