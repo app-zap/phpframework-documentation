@@ -27,7 +27,7 @@ class MySQL {
   public function connect() {
     if (!($this->connection instanceof \mysqli)) {
       $db_configuration = Configuration::getSection('db');
-      $this->connection = mysqli_connect($db_configuration['mysql.host'] . 'x', $db_configuration['mysql.user'], $db_configuration['mysql.password'], $db_configuration['mysql.database']);
+      $this->connection = mysqli_connect($db_configuration['mysql.host'], $db_configuration['mysql.user'], $db_configuration['mysql.password'], $db_configuration['mysql.database']);
       if (!$this->connection) {
         throw new DBConnectionException('Database connection failed');
       }
