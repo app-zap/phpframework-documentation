@@ -6,7 +6,7 @@ use AppZap\PHPFramework\Configuration\Configuration;
 class SimpleMigrator {
 
   /**
-   * @var MySQL
+   * @var DatabaseConnection
    */
   protected $db;
 
@@ -21,7 +21,7 @@ class SimpleMigrator {
   public function __construct() {
     $migration_directory = Configuration::get('application', 'migration_directory');
 
-    $this->db = StaticMySQL::getInstance();
+    $this->db = StaticDatabaseConnection::getInstance();
     $this->migration_directory = $migration_directory;
 
     if(!is_dir($migration_directory)) {

@@ -6,3 +6,6 @@ php:
   - "hhvm"
 install:
    - "composer update"
+before_script:
+  - mysql -e 'create database phpunit_tests;'
+  - mysql -e 'CREATE TABLE phpunit_tests.item (`id` int(11) unsigned NOT NULL AUTO_INCREMENT, `title` text, PRIMARY KEY (`id`)) ENGINE=InnoDB DEFAULT CHARSET=latin1;'

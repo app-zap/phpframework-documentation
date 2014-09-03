@@ -5,8 +5,8 @@ use AppZap\PHPFramework\Domain\Collection\AbstractModelCollection;
 use AppZap\PHPFramework\Domain\Model\AbstractModel;
 use AppZap\PHPFramework\Utility\Nomenclature;
 use AppZap\PHPFramework\Orm\EntityMapper;
-use AppZap\PHPFramework\Persistence\MySQL;
-use AppZap\PHPFramework\Persistence\StaticMySQL;
+use AppZap\PHPFramework\Persistence\DatabaseConnection;
+use AppZap\PHPFramework\Persistence\StaticDatabaseConnection;
 
 abstract class AbstractDomainRepository {
 
@@ -26,12 +26,12 @@ abstract class AbstractDomainRepository {
   protected $tablename;
 
   /**
-   * @var MySQL
+   * @var DatabaseConnection
    */
   protected $db;
 
   public function __construct() {
-    $this->db = StaticMySQL::getInstance();
+    $this->db = StaticDatabaseConnection::getInstance();
     $collection_classname = Nomenclature::repositoryclassname_to_collectionclassname(get_called_class());
     if (!class_exists($collection_classname)) {
       throw new NoCollectionForRepositoryFoundException('Collection class ' . $collection_classname . ' not found for repository ' . get_called_class(), 1409745719);

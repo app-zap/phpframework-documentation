@@ -4,12 +4,12 @@ namespace AppZap\PHPFramework\Persistence;
 use AppZap\PHPFramework\Configuration\Configuration;
 
 /**
- * MySQL database wrapper class
+ * Database wrapper class
  */
-class MySQL {
+class DatabaseConnection {
 
   /**
-   * @var \mysqli
+   * @var \PDO
    */
   protected $connection = NULL;
 
@@ -21,16 +21,11 @@ class MySQL {
   /**
    * Connects to the MySQL server, sets the charset for the connection and
    * selects the database
-   *
-   * @throws DBConnectionException when connection to database failed
    */
   public function connect() {
-    if (!($this->connection instanceof \mysqli)) {
+    if (!($this->connection instanceof \PDO)) {
       $db_configuration = Configuration::getSection('db');
-      $this->connection = mysqli_connect($db_configuration['mysql.host'], $db_configuration['mysql.user'], $db_configuration['mysql.password'], $db_configuration['mysql.database']);
-      if (!$this->connection) {
-        throw new DBConnectionException('Database connection failed');
-      }
+      $this->connection = new \PDO('mysql:host=' . $db_configuration['mysql.host'] . ';dbname=' . $db_configuration['mysql.database'], $db_configuration['mysql.user'], $db_configuration['mysql.password']);
       if (isset($db_configuration['charset'])) {
         $this->set_charset($db_configuration['charset']);
       }
@@ -52,12 +47,9 @@ class MySQL {
    * @param string $charset Connection transfer charset
    */
   protected function set_charset($charset) {
-    if ($this->charset !== $charset) {
-      $this->charset = $charset;
-      $sql = 'SET NAMES ' . $this->charset;
-      $this->execute($sql, FALSE);
-      return;
-    }
+    $this->charset = $charset;
+    $sql = 'SET NAMES ' . $this->charset;
+    $this->execute($sql, FALSE);
   }
 
   /**
@@ -69,7 +61,7 @@ class MySQL {
   public function query($sql) {
     $result = $this->execute($sql);
     $rows = [];
-    while ($row = $this->fetch($result)) {
+    foreach ($result as $row) {
       $rows[] = $row;
     }
     return $rows;
@@ -86,21 +78,16 @@ class MySQL {
   public function execute($sql) {
     $this->connect();
     // execute the query
-    $result = mysqli_query($this->connection, $sql);
+    try {
+      $result = $this->connection->query($sql);
+    } catch(\PDOException $e) {
+      // under HHVM we get a \PDOException instead of FALSE if the query fails
+      $result = FALSE;
+    }
     if ($result === FALSE) {
-      throw new DBQueryException('Database query failed. Error: "' . mysqli_error($this->connection) . '". Query was: "' . $sql . '"');
+      throw new DBQueryException('Database query failed. Error: "' . print_r($this->connection->errorInfo(), 1) . '". Query was: "' . $sql . '"');
     }
     return $result;
-  }
-
-  /**
-   * Returns number of affected rows of the last query
-   *
-   * @return int
-   */
-  public function affected() {
-    $this->connect();
-    return mysqli_affected_rows($this->connection);
   }
 
   /**
@@ -110,17 +97,7 @@ class MySQL {
    */
   public function last_id() {
     $this->connect();
-    return mysqli_insert_id($this->connection);
-  }
-
-  /**
-   * Returns a row from the result set
-   *
-   * @param \mysqli_result $result Resultset from query-function
-   * @return array
-   */
-  public function fetch($result) {
-    return mysqli_fetch_assoc($result);
+    return $this->connection->lastInsertId();
   }
 
   /**
@@ -151,27 +128,12 @@ class MySQL {
    */
   public function insert($table, $input, $ignore = FALSE) {
     $ignore = $ignore ? ' IGNORE' : '';
-    $this->execute('INSERT' . $ignore . ' INTO ' . $table . ' SET ' . $this->values($input));
-    return $this->last_id();
-  }
-
-  /**
-   * Inserts dataset into the table or updates an existing key and returns the auto increment key for it
-   *
-   * @param string $table Name of the table
-   * @param array $input Dataset to insert into the table
-   * @param array $update_fields update this columns when ON DUPLICATE KEY
-   * @return int
-   */
-  public function insert_or_update($table, $input, $update_fields = []) {
-    $update_values = [];
-    foreach ($update_fields as $fieldname) {
-      if (isset($input[$fieldname])) {
-        $update_values[$fieldname] = $input[$fieldname];
-      }
+    if (count($input)) {
+      $values = ' SET ' . $this->values($input);
+    } else {
+      $values = '(id) VALUES (NULL)';
     }
-
-    $this->execute('INSERT INTO ' . $table . ' SET ' . $this->values($input) . ' ON DUPLICATE KEY UPDATE ' . $this->values($update_values));
+    $this->execute('INSERT' . $ignore . ' INTO ' . $table . $values);
     return $this->last_id();
   }
 
@@ -221,21 +183,16 @@ class MySQL {
    * @param string $order Already escaped content of order clause
    * @param int $start First index of dataset to retrieve
    * @param int $limit Number of entries to retrieve
-   * @param boolean $fetch Return an pre-processed array of entries or the raw resource
-   * @return array|resource
+   * @return array
    */
-  public function select($table, $select = '*', $where = NULL, $order = NULL, $start = NULL, $limit = NULL, $fetch = TRUE) {
+  public function select($table, $select = '*', $where = NULL, $order = NULL, $start = NULL, $limit = NULL) {
     $sql = 'SELECT ' . $select . ' FROM ' . $table;
 
     if ($where !== NULL) $sql .= ' WHERE ' . $this->where($where);
     if ($order !== NULL) $sql .= ' ORDER BY ' . $order;
     if ($start !== NULL && $limit !== NULL) $sql .= ' LIMIT ' . $start . ',' . $limit;
 
-    if ($fetch) {
-      return $this->query($sql);
-    }
-
-    return $this->execute($sql);
+    return $this->query($sql);
   }
 
   /**
@@ -248,7 +205,7 @@ class MySQL {
    * @return array|boolean
    */
   public function row($table, $select = '*', $where = NULL, $order = NULL) {
-    $result = $this->select($table, $select, $where, $order, 0, 1, TRUE);
+    $result = $this->select($table, $select, $where, $order, 0, 1);
     return (count($result) > 0) ? $result[0] : FALSE;
   }
 
@@ -330,7 +287,7 @@ class MySQL {
       } elseif ($value === NULL) {
         $retval[] = '`' . $key . '`' . ' = NULL';
       } else {
-        $retval[] = '`' . $key . '`' . ' = \'' . $this->escape($value) . '\'';
+        $retval[] = '`' . $key . '`' . ' = ' . $this->escape($value);
       }
     }
     return implode(', ', $retval);
@@ -346,44 +303,25 @@ class MySQL {
   public function escape($value) {
     $this->connect();
     $value = stripslashes($value);
-    return mysqli_real_escape_string($this->connection, (string)$value);
+    return $this->connection->quote((string)$value);
   }
 
   /**
-   * Assembles a LIKE search for the WHERE clause
-   *
-   * @param string $search The string to search for (Will be pre- and appended with '%')
-   * @param array $fields The fields to search in
-   * @param string $mode One of 'OR' / 'AND'
-   * @return string
-   */
-  public function search_clause($search, $fields, $mode = 'OR') {
-    if (empty($search)) {
-      throw new InputException('Empty search value not allowed. Use select instead.');
-    }
-
-    $arr = [];
-    foreach ($fields as $f) {
-      $arr[] = '`' . $f . '` LIKE \'%' . $search . '%\'';
-    }
-    return '(' . implode(' ' . trim($mode) . ' ', $arr) . ')';
-  }
-
-  /**
-   * @param array $array
+   * @param array $where
    * @param string $method
    * @return string
+   * @throws InputException
    */
-  protected function where($array, $method = 'AND') {
-    if (!is_array($array)) {
-      return $array;
+  protected function where($where, $method = 'AND') {
+    if (!is_array($where)) {
+      throw new InputException('where clause has to be an associative array', 1409767864);
     }
 
     $output = [];
-    foreach ($array AS $field => $value) {
+    foreach ($where AS $field => $value) {
       $operand = '=';
       $operand2 = 'IN';
-      if (substr($field, -1) == '!') {
+      if (substr($field, -1) === '!') {
         $operand = '!=';
         $operand2 = 'NOT IN';
         $field = substr($field, 0, -1);
@@ -393,13 +331,10 @@ class MySQL {
       }
 
       if (is_array($value)) {
-        $arr = [];
-        foreach ($value as $v) {
-          $arr[] = $this->escape($v);
-        }
-        $output[] = '`' . $field . '`' . ' ' . $operand2 . ' (\'' . implode('\', \'', $arr) . '\')';
+        $value = array_map([$this, 'escape'], $value);
+        $output[] = '`' . $field . '`' . ' ' . $operand2 . ' (' . implode(', ', $value) . ')';
       } else {
-        $output[] = '`' . $field . '`' . ' ' . $operand . ' \'' . $this->escape($value) . '\'';
+        $output[] = '`' . $field . '`' . ' ' . $operand . ' ' . $this->escape($value);
       }
     }
     return implode(' ' . $method . ' ', $output);

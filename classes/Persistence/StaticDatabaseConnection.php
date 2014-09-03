@@ -1,24 +1,28 @@
 <?php
 namespace AppZap\PHPFramework\Persistence;
 
-/**
- * MySQL database wrapper class
- */
-class StaticMySQL {
+class StaticDatabaseConnection {
 
   /**
-   * @var MySQL
+   * @var DatabaseConnection
    */
   protected static $instance;
 
   /**
-   * @return MySQL
+   * @return DatabaseConnection
    * @throws DBConnectionException
    */
   public static function getInstance() {
     if(!self::$instance) {
-      self::$instance = new MySQL();
+      self::$instance = new DatabaseConnection();
     }
     return self::$instance;
+  }
+
+  /**
+   *
+   */
+  public static function reset() {
+    self::$instance = NULL;
   }
 }
