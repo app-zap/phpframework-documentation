@@ -16,14 +16,15 @@ class PropertyMapper {
     if ($source instanceof $target) {
       return $source;
     }
+    $target = ltrim($target, '\\');
     $original_target = $target;
     $value = NULL;
     while(TRUE) {
       switch ($target) {
-        case '\\AppZap\\PHPFramework\\Domain\\Model\\AbstractModel':
+        case 'AppZap\\PHPFramework\\Domain\\Model\\AbstractModel':
           $value = $this->mapToModel($source, $original_target);
           break(2);
-        case '\\DateTime':
+        case 'DateTime':
           $value = $this->mapToDateTime($source);
           break(2);
         default:
