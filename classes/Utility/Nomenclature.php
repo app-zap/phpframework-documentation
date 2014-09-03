@@ -1,5 +1,5 @@
 <?php
-namespace AppZap\PHPFramework;
+namespace AppZap\PHPFramework\Utility;
 
 class Nomenclature {
 

@@ -1,7 +1,7 @@
 <?php
 namespace AppZap\PHPFramework\Tests\Unit;
 
-use AppZap\PHPFramework\Nomenclature;
+use AppZap\PHPFramework\Utility\Nomenclature;
 
 class NomenclatureTest extends \PHPUnit_Framework_TestCase {
 

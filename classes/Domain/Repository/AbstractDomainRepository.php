@@ -3,7 +3,7 @@ namespace AppZap\PHPFramework\Domain\Repository;
 
 use AppZap\PHPFramework\Domain\Collection\AbstractModelCollection;
 use AppZap\PHPFramework\Domain\Model\AbstractModel;
-use AppZap\PHPFramework\Nomenclature;
+use AppZap\PHPFramework\Utility\Nomenclature;
 use AppZap\PHPFramework\Orm\EntityMapper;
 use AppZap\PHPFramework\Persistence\MySQL;
 use AppZap\PHPFramework\Persistence\StaticMySQL;
