@@ -57,3 +57,5 @@ Whereever you need to access the Configuration put
     use AppZap\PHPFramework\Configuration\Configuration;
 
 on top of the file and use `Configuration::get()` or `Configuration::getSection()` in your code.
+
+[![Build Status](https://travis-ci.org/app-zap/PHPFramework.svg?branch=develop)](https://travis-ci.org/app-zap/PHPFramework)
