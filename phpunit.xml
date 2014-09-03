@@ -1,10 +1,14 @@
 <phpunit bootstrap="./vendor/autoload.php">
+    <env name="project_root_directory" value=""/>
     <filter>
         <blacklist>
             <directory>vendor</directory>
         </blacklist>
     </filter>
     <testsuites>
+        <testsuite name="Test App">
+            <directory>tests/Functional</directory>
+        </testsuite>
         <testsuite name="Unit Tests">
             <directory>tests/Unit</directory>
         </testsuite>

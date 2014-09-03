@@ -8,7 +8,8 @@
   "autoload": {
     "psr-4": {
       "AppZap\\PHPFramework\\": "classes/",
-      "AppZap\\PHPFramework\\Tests\\": "tests/"
+      "AppZap\\PHPFramework\\Tests\\": "tests/",
+      "AppZap\\PHPFramework\\Tests\\Functional\\Testapp\\": "tests/Functional/testapp/classes/"
     }
   }
 }

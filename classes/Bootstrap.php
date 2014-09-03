@@ -66,6 +66,7 @@ class Bootstrap {
    *
    */
   protected static function invokeDispatcher() {
+    global $argv;
     $dispatcher = new Dispatcher();
     if (php_sapi_name() === 'cli') {
       array_shift($argv);

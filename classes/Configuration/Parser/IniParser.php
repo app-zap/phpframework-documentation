@@ -10,9 +10,11 @@ class IniParser {
    * @throws \Exception
    */
   static public function init($application) {
-    $application_directory = realpath(dirname($_SERVER['DOCUMENT_ROOT'] . $_SERVER['PHP_SELF']) . '/' . $application);
+    $project_root = isset($_ENV['project_root']) ? $_ENV['project_root'] : dirname($_SERVER['DOCUMENT_ROOT'] . $_SERVER['PHP_SELF']);
+    $application_directory_path = $project_root . '/' . $application;
+    $application_directory = realpath($project_root . '/' . $application);
     if (!is_dir($application_directory)) {
-      throw new \Exception('Application folder ' . htmlspecialchars($application_directory) . ' not found');
+      throw new \Exception('Application folder ' . htmlspecialchars($application_directory_path) . ' not found');
     }
     $application_directory .= '/';
     $config_file_path = $application_directory . 'settings.ini';
