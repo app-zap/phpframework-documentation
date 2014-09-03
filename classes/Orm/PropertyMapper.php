@@ -2,7 +2,7 @@
 namespace AppZap\PHPFramework\Orm;
 
 use AppZap\PHPFramework\Domain\Model\AbstractModel;
-use AppZap\PHPFramework\Nomenclature;
+use AppZap\PHPFramework\Utility\Nomenclature;
 
 class PropertyMapper {
 
@@ -25,12 +25,12 @@ class PropertyMapper {
           $value = $this->mapToModel($source, $original_target);
           break(2);
         case 'DateTime':
-          $value = $this->mapToDateTime($source);
+          $value = $this->mapToDateTime($source, $original_target);
           break(2);
         default:
           $target = get_parent_class($target);
           if ($target === FALSE) {
-            throw new \Exception('No conversion found for type "' . $original_target . '"');
+            throw new PropertyMappingNotSupportedForTargetClassException('No conversion found for type "' . $original_target . '"', 1409745080);
           }
       }
     }
@@ -41,10 +41,11 @@ class PropertyMapper {
    * @param int $source
    * @return \DateTime
    */
-  protected function mapToDateTime($source) {
-    if (!($source instanceof \DateTime) && is_numeric($source)) {
+  protected function mapToDateTime($source, $original_target) {
+    if (is_numeric($source)) {
       $timestamp = (int)$source;
-      $dateTime = new \DateTime();
+      /** @var \DateTime $dateTime */
+      $dateTime = new $original_target();
       $dateTime->setTimestamp($timestamp);
       return $dateTime;
     } else {
@@ -59,9 +60,15 @@ class PropertyMapper {
    */
   protected function mapToModel($source, $target_class) {
     $repository_classname = Nomenclature::modelclassname_to_repositoryclassname($target_class);
+    if (!class_exists($repository_classname)) {
+      throw new NoRepositoryForModelFoundException('Repository class ' . $repository_classname . ' for model ' . $target_class . ' does not exist.', 1409745296);
+    }
     /** @var \AppZap\PHPFramework\Domain\Repository\AbstractDomainRepository $repository */
     $repository = $repository_classname::get_instance();
     return $repository->find_by_id((int) $source);
   }
 
 }
+
+class PropertyMappingNotSupportedForTargetClassException extends \InvalidArgumentException {}
+class NoRepositoryForModelFoundException extends \InvalidArgumentException{}

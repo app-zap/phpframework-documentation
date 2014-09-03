@@ -33,6 +33,9 @@ abstract class AbstractDomainRepository {
   public function __construct() {
     $this->db = StaticMySQL::getInstance();
     $collection_classname = Nomenclature::repositoryclassname_to_collectionclassname(get_called_class());
+    if (!class_exists($collection_classname)) {
+      throw new NoCollectionForRepositoryFoundException('Collection class ' . $collection_classname . ' not found for repository ' . get_called_class(), 1409745719);
+    }
     $this->known_items = new $collection_classname();
     $this->entity_mapper = EntityMapper::get_instance();
     $this->tablename = Nomenclature::repositoryclassname_to_tablename(get_called_class());
@@ -142,3 +145,5 @@ abstract class AbstractDomainRepository {
   }
 
 }
+
+class NoCollectionForRepositoryFoundException extends \InvalidArgumentException{}

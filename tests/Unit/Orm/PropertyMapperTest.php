@@ -1,7 +1,21 @@
 <?php
 namespace AppZap\PHPFramework\Tests\Unit\Orm;
 
+use AppZap\PHPFramework\Domain\Collection\AbstractModelCollection;
+use AppZap\PHPFramework\Domain\Model\AbstractModel;
+use AppZap\PHPFramework\Domain\Repository\AbstractDomainRepository;
 use AppZap\PHPFramework\Orm\PropertyMapper;
+
+class MyDateTime extends \DateTime {}
+
+class Item extends AbstractModel{}
+class ItemRepository extends AbstractDomainRepository{
+  public function find_by_id($id) {
+    return $this->create_identity_model($id);
+  }
+}
+class ItemCollection extends AbstractModelCollection{}
+class ItemWithoutRepo extends AbstractModel{}
 
 class PropertyMapperTest extends \PHPUnit_Framework_TestCase {
 
@@ -43,6 +57,54 @@ class PropertyMapperTest extends \PHPUnit_Framework_TestCase {
     $this->assertTrue($datetime instanceof \DateTime);
     $datetime = $this->fixture->map($source, 'DateTime');
     $this->assertTrue($datetime instanceof \DateTime);
+  }
+
+  /**
+   * @test
+   */
+  public function dont_convert_to_datetime_if_not_numeric() {
+    $source = 'abc';
+    $this->assertSame($source, $this->fixture->map($source, 'DateTime'));
+  }
+
+  /**
+   * @test
+   */
+  public function convert_to_class_extending_datetime() {
+    $source = 1409744701;
+    /** @var MyDateTime $my_datetime */
+    $my_datetime = $this->fixture->map($source, '\\AppZap\\PHPFramework\\Tests\\Unit\\Orm\\MyDateTime');
+    $this->assertTrue($my_datetime instanceof MyDateTime);
+    $this->assertSame($source, $my_datetime->getTimestamp());
+  }
+
+  /**
+   * @test
+   * @expectedException \AppZap\PHPFramework\Orm\PropertyMappingNotSupportedForTargetClassException
+   */
+  public function conversion_not_supported() {
+    $source = 'abc';
+    $this->fixture->map($source, 'NotExistingClass');
+  }
+
+  /**
+   * @test
+   */
+  public function convert_to_model() {
+    $source = 1;
+    /** @var Item $item */
+    $item = $this->fixture->map($source, 'AppZap\\PHPFramework\\Tests\\Unit\\Orm\\Item');
+    $this->assertTrue($item instanceof Item);
+    $this->assertSame(1, $item->get_id());
+  }
+
+  /**
+   * @test
+   * @expectedException \AppZap\PHPFramework\Orm\NoRepositoryForModelFoundException
+   */
+  public function convert_to_model_without_repo() {
+    $source = 1;
+    $this->fixture->map($source, 'AppZap\\PHPFramework\\Tests\\Unit\\Orm\\ItemWithoutRepo');
   }
 
 }
