@@ -24,18 +24,6 @@ class Nomenclature {
   }
 
   /**
-   * \Vendor\MyApp\Domain\Model\Item => item
-   *
-   * @param $model_classname
-   * @return string
-   */
-  public static function modelclassname_to_propertyname($model_classname) {
-    $model_classname_parts = explode('\\', $model_classname);
-    $classname_without_namespace = array_pop($model_classname_parts);
-    return strtolower($classname_without_namespace);
-  }
-
-  /**
    * \Vendor\MyApp\Domain\Model\Item => \Vendor\MyApp\Domain\Repository\ItemRepository
    *
    * @param $model_classname

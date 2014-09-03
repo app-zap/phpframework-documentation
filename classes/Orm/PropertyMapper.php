@@ -20,10 +20,10 @@ class PropertyMapper {
     $value = NULL;
     while(TRUE) {
       switch ($target) {
-        case AbstractModel::class:
+        case '\\AppZap\\PHPFramework\\Domain\\Model\\AbstractModel':
           $value = $this->mapToModel($source, $original_target);
           break(2);
-        case \DateTime::class:
+        case '\\DateTime':
           $value = $this->mapToDateTime($source);
           break(2);
         default:
