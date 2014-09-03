@@ -1,5 +1,5 @@
 <?php
-namespace AppZap\PHPFramework\Tests\Configuration;
+namespace AppZap\PHPFramework\Tests\Unit\Configuration;
 
 use AppZap\PHPFramework\Configuration\Configuration;
 

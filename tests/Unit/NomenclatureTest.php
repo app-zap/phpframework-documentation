@@ -1,5 +1,5 @@
 <?php
-namespace AppZap\PHPFramework\Tests;
+namespace AppZap\PHPFramework\Tests\Unit;
 
 use AppZap\PHPFramework\Nomenclature;
 

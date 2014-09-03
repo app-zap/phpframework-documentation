@@ -1,5 +1,5 @@
 <?php
-namespace AppZap\PHPFramework\Tests\Domain;
+namespace AppZap\PHPFramework\Tests\Unit\Domain;
 
 use AppZap\PHPFramework\Domain\Model\AbstractModel;
 

@@ -5,8 +5,8 @@
         </blacklist>
     </filter>
     <testsuites>
-        <testsuite name="phpframework">
-            <directory>tests</directory>
+        <testsuite name="Unit Tests">
+            <directory>tests/Unit</directory>
         </testsuite>
     </testsuites>
 </phpunit>
