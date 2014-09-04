@@ -8,6 +8,8 @@ use AppZap\PHPFramework\Configuration\Configuration;
  */
 class DatabaseConnection {
 
+  const VALUE_NOW = 100;
+
   /**
    * @var \PDO
    */
@@ -282,7 +284,7 @@ class DatabaseConnection {
   protected function values($input) {
     $retval = [];
     foreach ($input as $key => $value) {
-      if ($value === 'NOW()') {
+      if ($value === self::VALUE_NOW) {
         $retval[] = '`' . $key . '`' . ' = NOW()';
       } elseif ($value === NULL) {
         $retval[] = '`' . $key . '`' . ' = NULL';

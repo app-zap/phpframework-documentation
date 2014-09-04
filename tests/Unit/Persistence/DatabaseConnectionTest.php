@@ -172,7 +172,7 @@ class DatabaseConnectionTest extends \PHPUnit_Extensions_Database_TestCase {
    * @test
    */
   public function value_now() {
-    $insert_id = $this->fixture->insert('item', ['title' => 'NOW()']);
+    $insert_id = $this->fixture->insert('item', ['title' => DatabaseConnection::VALUE_NOW]);
     $row = $this->fixture->row('item', '*', ['id' => $insert_id]);
     $this->assertNotFalse(strtotime($row['title']));
   }
