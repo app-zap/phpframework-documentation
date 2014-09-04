@@ -175,6 +175,9 @@ class DatabaseConnectionTest extends \PHPUnit_Extensions_Database_TestCase {
     $insert_id = $this->fixture->insert('item', ['title' => DatabaseConnection::VALUE_NOW]);
     $row = $this->fixture->row('item', '*', ['id' => $insert_id]);
     $this->assertNotFalse(strtotime($row['title']));
+    $insert_id = $this->fixture->insert('item', ['title' => 100]);
+    $row = $this->fixture->row('item', '*', ['id' => $insert_id]);
+    $this->assertEquals(100, $row['title']);
   }
 
   /**

@@ -8,7 +8,11 @@ use AppZap\PHPFramework\Configuration\Configuration;
  */
 class DatabaseConnection {
 
-  const VALUE_NOW = 100;
+  /**
+   * We use a really large random number (256 digits) as constant with the meaning of NOW().
+   * The number is this big because we assume that it's unlikely that you ever want to insert exactly this value in the database (which is not possible).
+   */
+  const VALUE_NOW = 5095414940500631472181088885899536025481896119043143904833756342257042063363209955585421994195003657933247335457833044723938770200469558719605364490248995360254818961190431439048337563422570420633632044902489953602548189611904314390483375634225704206336320;
 
   /**
    * @var \PDO
