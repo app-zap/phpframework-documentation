@@ -1,5 +1,5 @@
 {
-  "name": "smichaelsen/phpframework",
+  "name": "app-zap/phpframework",
   "require": {
     "twig/twig": "1.*"
   },
