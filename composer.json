@@ -1,5 +1,5 @@
 {
-  "name": "appzap/phpframework",
+  "name": "app-zap/phpframework",
   "require": {
     "airbrake/airbrake-php": "dev-master",
     "nette/caching": "2.2.*",
