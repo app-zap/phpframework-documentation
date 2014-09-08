@@ -12,7 +12,7 @@ class DatabaseConnection {
    * We use the largset number PHP can handle as constant with the meaning of NOW().
    * The number is this big because we assume that it's unlikely that you ever want to insert exactly this value in the database (which is not possible).
    */
-  const VALUE_NOW = PHP_MAX_INT;
+  const VALUE_NOW = PHP_INT_MAX;
 
   /**
    * @var \PDO
