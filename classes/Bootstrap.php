@@ -3,6 +3,7 @@ namespace AppZap\PHPFramework;
 
 use AppZap\PHPFramework\Configuration\Configuration;
 use AppZap\PHPFramework\Configuration\Parser\IniParser;
+use AppZap\PHPFramework\Mvc\ApplicationPartMissingException;
 use AppZap\PHPFramework\Mvc\Dispatcher;
 use AppZap\PHPFramework\Persistence\SimpleMigrator;
 
@@ -14,6 +15,7 @@ class Bootstrap {
    */
   public static function bootstrap($application) {
     self::initializeConfiguration($application);
+    self::checkForRequiredApplicationParts();
     self::setErrorReporting();
     self::initializeExceptionLogging();
     self::invokeDatabaseMigrator();
@@ -26,6 +28,18 @@ class Bootstrap {
    */
   protected static function initializeConfiguration($application) {
     IniParser::init($application);
+  }
+
+  /**
+   * @throws ApplicationPartMissingException
+   */
+  protected static function checkForRequiredApplicationParts() {
+    if (!is_dir(Configuration::get('application', 'templates_directory'))) {
+      throw new ApplicationPartMissingException('Template directory "' . Configuration::get('application', 'templates_directory') . '" does not exist.');
+    }
+    if (!is_readable(Configuration::get('application', 'routes_file'))) {
+      throw new ApplicationPartMissingException('Routes file "' . Configuration::get('application', 'routes_file') . '" does not exist.');
+    }
   }
 
   /**
