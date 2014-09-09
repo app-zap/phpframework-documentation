@@ -20,18 +20,14 @@ class DatabaseConnection {
   protected $connection = NULL;
 
   /**
-   * @var string
-   */
-  protected $charset;
-
-  /**
    * Connects to the MySQL server, sets the charset for the connection and
    * selects the database
    */
   public function connect() {
     if (!($this->connection instanceof \PDO)) {
       $db_configuration = Configuration::getSection('db');
-      $this->connection = new \PDO('mysql:host=' . $db_configuration['mysql.host'] . ';dbname=' . $db_configuration['mysql.database'], $db_configuration['mysql.user'], $db_configuration['mysql.password']);
+      $dsn = 'mysql:host=' . $db_configuration['mysql.host'] . ';dbname=' . $db_configuration['mysql.database'];
+      $this->connection = new \PDO($dsn, $db_configuration['mysql.user'], $db_configuration['mysql.password']);
       if (isset($db_configuration['charset'])) {
         $this->set_charset($db_configuration['charset']);
       }
@@ -53,8 +49,7 @@ class DatabaseConnection {
    * @param string $charset Connection transfer charset
    */
   protected function set_charset($charset) {
-    $this->charset = $charset;
-    $sql = 'SET NAMES ' . $this->charset;
+    $sql = 'SET NAMES ' . $charset;
     $this->execute($sql, FALSE);
   }
 
