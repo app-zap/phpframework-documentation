@@ -19,6 +19,7 @@ class HttpStatus {
   const STATUS_403_FORBIDDEN = 403;
   const STATUS_404_NOT_FOUND = 404;
   const STATUS_405_METHOD_NOT_ALLOWED = 405;
+  const STATUS_409_CONFLICT = 409;
   const STATUS_410_GONE = 410;
   const STATUS_429_TOO_MANY_REQUESTS = 429;
 
@@ -37,9 +38,22 @@ class HttpStatus {
    */
   public static function set_status($code, $options = NULL) {
     $code = (int) $code;
+    // Status codes with optional "Location"
+    if (in_array($code, [self::STATUS_201_CREATED])) {
+      if (is_array($options) && array_key_exists(self::HEADER_FIELD_LOCATION, $options)) {
+        self::$additional_headers[self::HEADER_FIELD_LOCATION] = $options[self::HEADER_FIELD_LOCATION];
+      }
+    }
     // Status codes with required "Location"
-    if (in_array($code, [self::STATUS_201_CREATED, self::STATUS_301_MOVED_PERMANENTLY, self::STATUS_307_TEMPORARY_REDIRECT])) {
-      if (!(array_key_exists(self::HEADER_FIELD_LOCATION, self::$additional_headers) || array_key_exists(self::HEADER_FIELD_LOCATION, $options))) {
+    if (in_array($code, [self::STATUS_301_MOVED_PERMANENTLY, self::STATUS_307_TEMPORARY_REDIRECT])) {
+      if (
+          !(
+              array_key_exists(self::HEADER_FIELD_LOCATION, self::$additional_headers) ||
+              (
+                  is_array($options) && array_key_exists(self::HEADER_FIELD_LOCATION, $options)
+              )
+          )
+      ) {
         throw new \Exception('Tried to set HTTP status code ' . $code . ' without required location field');
       }
       if (array_key_exists(self::HEADER_FIELD_LOCATION, $options)) {
