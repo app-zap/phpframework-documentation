@@ -32,13 +32,20 @@ abstract class AbstractDomainRepository {
 
   public function __construct() {
     $this->db = StaticDatabaseConnection::getInstance();
-    $collection_classname = Nomenclature::repositoryclassname_to_collectionclassname(get_called_class());
-    if (!class_exists($collection_classname)) {
-      throw new NoCollectionForRepositoryFoundException('Collection class ' . $collection_classname . ' not found for repository ' . get_called_class(), 1409745719);
-    }
-    $this->known_items = new $collection_classname();
+    $this->known_items = $this->get_new_collection();
     $this->entity_mapper = EntityMapper::get_instance();
     $this->tablename = Nomenclature::repositoryclassname_to_tablename(get_called_class());
+  }
+
+  /**
+   * @return \AppZap\PHPFramework\Domain\Collection\AbstractModelCollection
+   */
+  public function get_new_collection() {
+    $collection_classname = Nomenclature::repositoryclassname_to_collectionclassname(get_called_class());
+    if (!class_exists($collection_classname)) {
+      $collection_classname = 'AppZap\\PHPFramework\\Domain\\Collection\\GenericModelCollection';
+    }
+    return new $collection_classname;
   }
 
   /**
@@ -105,9 +112,7 @@ abstract class AbstractDomainRepository {
     foreach ($where as $property => $value) {
       $where[$property] = $this->entity_mapper->scalarize_value($value);
     }
-    $collection_classname = Nomenclature::repositoryclassname_to_collectionclassname(get_called_class());
-    /** @var AbstractModelCollection $collection */
-    $collection = new $collection_classname();
+    $collection = $this->get_new_collection();
     $records = $this->db->select($this->tablename, '*', $where);
     foreach ($records as $record) {
       $collection->set_item($this->record_to_object($record));
