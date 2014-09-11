@@ -55,16 +55,7 @@ class Bootstrap {
    *
    */
   protected static function initializeExceptionLogging() {
-    $airbrake_configuration = Configuration::getSection('airbrake');
-    if (!is_null($airbrake_configuration)) {
-      \Airbrake\EventHandler::start($airbrake_configuration['api_key'], FALSE, [
-              'secure' => TRUE,
-              'host' => $airbrake_configuration['host'],
-              'resource' => $airbrake_configuration['resource'],
-              'timeout' => 10,
-          ]
-      );
-    }
+    ExceptionLogger::initialize();
   }
 
   /**
