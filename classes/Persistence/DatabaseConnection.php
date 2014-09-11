@@ -158,7 +158,7 @@ class DatabaseConnection {
    * @return resource
    */
   public function update($table, $input, $where) {
-    return $this->execute('UPDATE ' . $table . ' SET ' . $this->values($input) . ' WHERE ' . $this->where($where));
+    return $this->execute('UPDATE ' . $table . ' SET ' . $this->values($input) . $this->where($where));
   }
 
   /**
@@ -169,9 +169,7 @@ class DatabaseConnection {
    */
   public function delete($table, $where = NULL) {
     $sql = 'DELETE FROM ' . $table;
-    if ($where !== NULL) {
-      $sql .= ' WHERE ' . $this->where($where);
-    }
+    $sql .= $this->where($where);
     $this->execute($sql);
   }
 
@@ -180,7 +178,7 @@ class DatabaseConnection {
    *
    * @param string $table Name of the table
    * @param string $select Fields to retrieve from table
-   * @param  array $where Selector for the datasets to select
+   * @param array $where Selector for the datasets to select
    * @param string $order Already escaped content of order clause
    * @param int $start First index of dataset to retrieve
    * @param int $limit Number of entries to retrieve
@@ -189,9 +187,13 @@ class DatabaseConnection {
   public function select($table, $select = '*', $where = NULL, $order = NULL, $start = NULL, $limit = NULL) {
     $sql = 'SELECT ' . $select . ' FROM ' . $table;
 
-    if ($where !== NULL) $sql .= ' WHERE ' . $this->where($where);
-    if ($order !== NULL) $sql .= ' ORDER BY ' . $order;
-    if ($start !== NULL && $limit !== NULL) $sql .= ' LIMIT ' . $start . ',' . $limit;
+    $sql .= $this->where($where);
+    if ($order !== NULL) {
+      $sql .= ' ORDER BY ' . $order;
+    }
+    if ($start !== NULL && $limit !== NULL) {
+      $sql .= ' LIMIT ' . $start . ',' . $limit;
+    }
 
     return $this->query($sql);
   }
@@ -314,8 +316,14 @@ class DatabaseConnection {
    * @throws InputException
    */
   protected function where($where, $method = 'AND') {
+    if (is_null($where)) {
+      return '';
+    }
     if (!is_array($where)) {
       throw new InputException('where clause has to be an associative array', 1409767864);
+    }
+    if (!count($where)) {
+      return '';
     }
 
     $output = [];
@@ -338,7 +346,7 @@ class DatabaseConnection {
         $output[] = '`' . $field . '`' . ' ' . $operand . ' ' . $this->escape($value);
       }
     }
-    return implode(' ' . $method . ' ', $output);
+    return ' WHERE ' . implode(' ' . $method . ' ', $output);
   }
 
 }
