@@ -38,17 +38,6 @@ abstract class AbstractDomainRepository {
   }
 
   /**
-   * @return \AppZap\PHPFramework\Domain\Collection\AbstractModelCollection
-   */
-  public function get_new_collection() {
-    $collection_classname = Nomenclature::repositoryclassname_to_collectionclassname(get_called_class());
-    if (!class_exists($collection_classname)) {
-      $collection_classname = 'AppZap\\PHPFramework\\Domain\\Collection\\GenericModelCollection';
-    }
-    return new $collection_classname;
-  }
-
-  /**
    * @return AbstractDomainRepository
    */
   public static function get_instance() {
@@ -80,6 +69,13 @@ abstract class AbstractDomainRepository {
   }
 
   /**
+   * @return AbstractModelCollection
+   */
+  public function find_all() {
+    return $this->query_many();
+  }
+
+  /**
    * @param AbstractModel $object
    */
   public function save(AbstractModel $object) {
@@ -94,30 +90,47 @@ abstract class AbstractDomainRepository {
   }
 
   /**
-   * @param $where
+   * @param array $where
    * @return AbstractModel
    */
-  protected function query_one($where) {
-    foreach ($where as $property => $value) {
-      $where[$property] = $this->entity_mapper->scalarize_value($value);
-    }
-    return $this->record_to_object($this->db->row($this->tablename, '*', $where));
+  protected function query_one($where = NULL) {
+    return $this->record_to_object($this->db->row($this->tablename, '*', $this->scalarize_where($where)));
   }
 
   /**
-   * @param $where
+   * @param array $where
    * @return AbstractModelCollection
    */
-  protected function query_many($where) {
-    foreach ($where as $property => $value) {
-      $where[$property] = $this->entity_mapper->scalarize_value($value);
-    }
+  protected function query_many($where = NULL) {
     $collection = $this->get_new_collection();
-    $records = $this->db->select($this->tablename, '*', $where);
+    $records = $this->db->select($this->tablename, '*', $this->scalarize_where($where));
     foreach ($records as $record) {
       $collection->set_item($this->record_to_object($record));
     }
     return $collection;
+  }
+
+  /**
+   * @param array $where
+   */
+  protected function scalarize_where($where) {
+    if (is_array($where)) {
+      foreach ($where as $property => $value) {
+        $where[$property] = $this->entity_mapper->scalarize_value($value);
+      }
+    }
+    return $where;
+  }
+
+  /**
+   * @return \AppZap\PHPFramework\Domain\Collection\AbstractModelCollection
+   */
+  protected function get_new_collection() {
+    $collection_classname = Nomenclature::repositoryclassname_to_collectionclassname(get_called_class());
+    if (!class_exists($collection_classname)) {
+      $collection_classname = 'AppZap\\PHPFramework\\Domain\\Collection\\GenericModelCollection';
+    }
+    return new $collection_classname;
   }
 
   /**
