@@ -3,7 +3,7 @@ namespace AppZap\PHPFramework\Domain\Collection;
 
 use AppZap\PHPFramework\Domain\Model\AbstractModel;
 
-abstract class AbstractModelCollection implements \Iterator {
+abstract class AbstractModelCollection implements \Iterator, \Countable {
 
   /**
    * @var array
@@ -58,6 +58,10 @@ abstract class AbstractModelCollection implements \Iterator {
   public function valid() {
     $key = key($this->items);
     return ($key !== NULL && $key !== FALSE);
+  }
+
+  public function count() {
+    return count($this->items);
   }
 
 }

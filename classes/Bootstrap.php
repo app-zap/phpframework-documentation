@@ -75,10 +75,11 @@ class Bootstrap {
     $dispatcher = new Dispatcher();
     if (php_sapi_name() === 'cli') {
       array_shift($argv);
-      $dispatcher->dispatch('/' . join('/', $argv));
+      $resource = '/' . join('/', $argv);
     } else {
-      $dispatcher->dispatch($_SERVER['REQUEST_URI']);
+      $resource = $_SERVER['REQUEST_URI'];
     }
+    $dispatcher->dispatch($resource);
   }
 
 }
