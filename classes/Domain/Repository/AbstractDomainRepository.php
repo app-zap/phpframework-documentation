@@ -150,5 +150,3 @@ abstract class AbstractDomainRepository {
   }
 
 }
-
-class NoCollectionForRepositoryFoundException extends \InvalidArgumentException{}
