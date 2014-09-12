@@ -2,6 +2,7 @@
 namespace AppZap\PHPFramework\Configuration\Parser;
 
 use AppZap\PHPFramework\Configuration\Configuration;
+use AppZap\PHPFramework\Mvc\ApplicationPartMissingException;
 
 class IniParser {
 
@@ -14,7 +15,7 @@ class IniParser {
     $application_directory_path = $project_root . '/' . $application;
     $application_directory = realpath($project_root . '/' . $application);
     if (!is_dir($application_directory)) {
-      throw new \Exception('Application folder ' . htmlspecialchars($application_directory_path) . ' not found');
+      throw new ApplicationPartMissingException('Application folder ' . htmlspecialchars($application_directory_path) . ' not found', 1410538265);
     }
     $application_directory .= '/';
     $config_file_path = $application_directory . 'settings.ini';
