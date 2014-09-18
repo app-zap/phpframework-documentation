@@ -26,6 +26,8 @@ class BaseHttpAuthentication {
         $this->name = $vals[0];
         $this->password = $vals[1];
       }
+    } elseif (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+      list($this->name, $this->password) = explode(':', base64_decode(substr($_SERVER['HTTP_AUTHORIZATION'], 6)));
     }
   }
 
