@@ -1,0 +1,12 @@
+RewriteEngine On
+RewriteBase /
+
+<FilesMatch "\.(htaccess|htpasswd|ini|log|sh|inc|bak|sql)$">
+Order Allow,Deny
+Deny from all
+</FilesMatch>
+
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule .? index.php [L]
