@@ -171,18 +171,6 @@ class DatabaseConnectionTest extends \PHPUnit_Extensions_Database_TestCase {
   /**
    * @test
    */
-  public function value_now() {
-    $insert_id = $this->fixture->insert('item', ['title' => DatabaseConnection::VALUE_NOW]);
-    $row = $this->fixture->row('item', '*', ['id' => $insert_id]);
-    $this->assertNotFalse(strtotime($row['title']));
-    $insert_id = $this->fixture->insert('item', ['title' => 100]);
-    $row = $this->fixture->row('item', '*', ['id' => $insert_id]);
-    $this->assertEquals(100, $row['title']);
-  }
-
-  /**
-   * @test
-   */
   public function value_null() {
     $insert_id = $this->fixture->insert('item', []);
     $insert_id2 = $this->fixture->insert('item', ['id' => NULL]);
