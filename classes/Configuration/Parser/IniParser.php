@@ -10,7 +10,7 @@ class IniParser {
    * @throws \Exception
    */
   static public function init($application) {
-    $project_root = isset($_ENV['project_root']) ? $_ENV['project_root'] : dirname($_SERVER['DOCUMENT_ROOT'] . $_SERVER['PHP_SELF']);
+    $project_root = isset($_ENV['AppZap\PHPFramework\ProjectRoot']) ? $_ENV['AppZap\PHPFramework\ProjectRoot'] : dirname($_SERVER['DOCUMENT_ROOT'] . $_SERVER['PHP_SELF']);
     $application_directory_path = $project_root . '/' . $application;
     $application_directory = realpath($project_root . '/' . $application);
     if (!is_dir($application_directory)) {
