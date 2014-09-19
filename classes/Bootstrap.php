@@ -19,7 +19,7 @@ class Bootstrap {
     self::setErrorReporting();
     self::initializeExceptionLogging();
     self::invokeDatabaseMigrator();
-    self::invokeDispatcher();
+    return self::invokeDispatcher();
   }
 
   /**
@@ -79,7 +79,7 @@ class Bootstrap {
     } else {
       $resource = $_SERVER['REQUEST_URI'];
     }
-    $dispatcher->dispatch($resource);
+    return $dispatcher->dispatch($resource);
   }
 
 }

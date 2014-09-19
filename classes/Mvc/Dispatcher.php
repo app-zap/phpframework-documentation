@@ -76,13 +76,14 @@ class Dispatcher {
     }
 
     echo $output;
+    return $output;
   }
 
   /**
    * @return string
    */
   protected function determineRequestMethod() {
-    if (php_sapi_name() == 'cli') {
+    if (php_sapi_name() === 'cli') {
       $method = 'cli';
       return $method;
     } else {
