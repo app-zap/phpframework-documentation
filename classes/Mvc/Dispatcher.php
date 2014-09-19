@@ -93,7 +93,10 @@ class Dispatcher {
    *
    */
   protected function determineRequestMethod() {
-    if (php_sapi_name() === 'cli') {
+    if (isset($_ENV['AppZap\PHPFramework\RequestMethod'])) {
+      $this->request_method = $_ENV['AppZap\PHPFramework\RequestMethod'];
+    }
+    elseif (php_sapi_name() === 'cli') {
       $this->request_method = 'cli';
     } else {
       $this->request_method = strtolower($_SERVER['REQUEST_METHOD']);
