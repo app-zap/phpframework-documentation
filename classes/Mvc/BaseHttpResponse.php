@@ -28,22 +28,6 @@ class BaseHttpResponse {
       $options['cache'] = Configuration::get('cache', 'twig_cache_folder', './cache/twig/');
     }
     $this->rendering_engine = new \Twig_Environment($loader, $options);
-
-    if(!empty($this->output_functions)) {
-      foreach($this->output_functions as $key => $value) {
-        if(is_array($value)) {
-          $this->rendering_engine->addFunction($key, new \Twig_Function_Function($value[0] .'::'. $value[1]));
-        } else {
-          $this->rendering_engine->addFunction($key, new \Twig_Function_Function($value));
-        }
-      }
-    }
-
-    if(!empty($this->output_filters)) {
-      foreach($this->output_filters as $key => $value) {
-        $this->rendering_engine->addFilter(new \Twig_SimpleFilter($key, $value));
-      }
-    }
   }
 
   /**
@@ -153,8 +137,21 @@ class BaseHttpResponse {
    * @param $name string Name of the filter to use in the template
    * @param $function string Name of the function to execute for the value from the template
    */
-  public function add_output_filter($name, $function) {
-    $this->output_filters[$name] = $function;
+  public function add_output_filter($name, $function, $htmlEscape = FALSE) {
+    $options = [];
+    if (!$htmlEscape) {
+      $options = ['is_safe' => ['all']];
+    }
+    $this->rendering_engine->addFilter(new \Twig_SimpleFilter($name, $function, $options));
+
+  }
+
+  /**
+   * @param $name
+   * @return bool
+   */
+  public function has_output_filter($name) {
+    return $this->rendering_engine->getFilter($name) instanceof \Twig_SimpleFilter;
   }
 
   /**
@@ -163,8 +160,20 @@ class BaseHttpResponse {
    * @param $name string Name of the function to use in the template
    * @param $function string Name of the function to execute for the value from the template
    */
-  public function add_output_function($name, $function) {
-    $this->output_functions[$name] = $function;
+  public function add_output_function($name, $function, $htmlEscape = FALSE) {
+    $options = [];
+    if (!$htmlEscape) {
+      $options = ['is_safe' => ['all']];
+    }
+    $this->rendering_engine->addFunction(new \Twig_SimpleFunction($name, $function, $options));
+  }
+
+  /**
+   * @param $name
+   * @return bool
+   */
+  public function has_output_function($name) {
+    return $this->rendering_engine->getFunction($name) instanceof \Twig_SimpleFunction;
   }
 
   protected function send_headers() {

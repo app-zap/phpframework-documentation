@@ -9,12 +9,6 @@ use AppZap\PHPFramework\Configuration\Configuration;
 class DatabaseConnection {
 
   /**
-   * We use the largset number PHP can handle as constant with the meaning of NOW().
-   * The number is this big because we assume that it's unlikely that you ever want to insert exactly this value in the database (which is not possible).
-   */
-  const VALUE_NOW = PHP_INT_MAX;
-
-  /**
    * @var \PDO
    */
   protected $connection = NULL;
@@ -285,9 +279,7 @@ class DatabaseConnection {
   protected function values($input) {
     $retval = [];
     foreach ($input as $key => $value) {
-      if ($value === self::VALUE_NOW) {
-        $retval[] = '`' . $key . '`' . ' = NOW()';
-      } elseif ($value === NULL) {
+      if ($value === NULL) {
         $retval[] = '`' . $key . '`' . ' = NULL';
       } else {
         $retval[] = '`' . $key . '`' . ' = ' . $this->escape($value);

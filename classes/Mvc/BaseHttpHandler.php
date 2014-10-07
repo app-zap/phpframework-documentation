@@ -65,5 +65,3 @@ abstract class BaseHttpHandler {
   }
 
 }
-
-class MethodNotImplementedException extends \Exception {}

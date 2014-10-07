@@ -19,7 +19,7 @@ class Bootstrap {
     self::setErrorReporting();
     self::initializeExceptionLogging();
     self::invokeDatabaseMigrator();
-    self::invokeDispatcher();
+    return self::invokeDispatcher();
   }
 
   /**
@@ -73,13 +73,13 @@ class Bootstrap {
   protected static function invokeDispatcher() {
     global $argv;
     $dispatcher = new Dispatcher();
-    if (php_sapi_name() === 'cli') {
+    if ($dispatcher->get_request_method() === 'cli') {
       array_shift($argv);
       $resource = '/' . join('/', $argv);
     } else {
       $resource = $_SERVER['REQUEST_URI'];
     }
-    $dispatcher->dispatch($resource);
+    return $dispatcher->dispatch($resource);
   }
 
 }
