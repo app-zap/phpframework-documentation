@@ -79,4 +79,24 @@ class AbstractDomainRepositoryTest extends \PHPUnit_Framework_TestCase {
     $this->assertNull($item);
   }
 
+  /**
+   * @test
+   * @expectedException \AppZap\PHPFramework\SingletonException
+   * @expectedExceptionCode 1412682071
+   */
+  public function cloneException() {
+    return clone $this->repository;
+  }
+
+  /**
+   * @test
+   * @expectedException \AppZap\PHPFramework\SingletonException
+   * @expectedExceptionCode 1412682075
+   */
+  public function wakeupException() {
+    $this->repository->__wakeup();
+  }
+
+
+
 }
