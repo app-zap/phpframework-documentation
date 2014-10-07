@@ -1,19 +1,20 @@
 <?php
-namespace AppZap\PHPFramework\Tests\Unit\Mvc;
+namespace AppZap\PHPFramework\Tests\Unit\Mvc\View;
 
 use AppZap\PHPFramework\Configuration\Configuration;
-use AppZap\PHPFramework\Mvc\BaseHttpResponse;
+use AppZap\PHPFramework\Mvc\View\TwigView;
 
-class BaseHttpResponseTest extends \PHPUnit_Framework_TestCase {
+class TwigViewTest extends \PHPUnit_Framework_TestCase {
 
   /**
-   * @var BaseHttpResponse
+   * @var TwigView
    */
   protected $reponse;
 
   public function setUp() {
-    Configuration::set('application', 'templates_directory', dirname(__FILE__) . '/_templates');
-    $this->reponse = new BaseHttpResponse();
+    Configuration::set('application', 'templates_directory', dirname(__FILE__) . '/../_templates');
+    Configuration::set('cache', 'enable', TRUE);
+    $this->reponse = new TwigView();
   }
 
   /**

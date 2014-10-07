@@ -4,6 +4,7 @@ namespace AppZap\PHPFramework\Mvc;
 use AppZap\PHPFramework\Cache\CacheFactory;
 use AppZap\PHPFramework\Configuration\Configuration;
 use AppZap\PHPFramework\Cache\Cache;
+use AppZap\PHPFramework\Mvc\View\TwigView;
 
 /**
  * Main entrance class for the framework / application
@@ -58,7 +59,7 @@ class Dispatcher {
       $parameters = $router->get_parameters();
 
       $request = new BaseHttpRequest($this->request_method);
-      $response = new BaseHttpResponse();
+      $response = new TwigView();
 
       $default_template_name = $this->determineDefaultTemplateName($responder_class);
       if ($default_template_name) {

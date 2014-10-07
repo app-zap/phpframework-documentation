@@ -3,9 +3,9 @@ namespace AppZap\PHPFramework\Tests\Mvc;
 
 use AppZap\PHPFramework\Mvc\BaseHttpHandler;
 use AppZap\PHPFramework\Mvc\BaseHttpRequest;
-use AppZap\PHPFramework\Mvc\BaseHttpResponse;
+use AppZap\PHPFramework\Mvc\View\AbstractView;
 
-class TestResponse extends BaseHttpResponse {
+class TestResponse extends AbstractView {
   public function __construct() {
   }
 }

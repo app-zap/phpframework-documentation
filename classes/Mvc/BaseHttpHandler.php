@@ -2,6 +2,7 @@
 namespace AppZap\PHPFramework\Mvc;
 
 use AppZap\PHPFramework\Authentication\BaseHttpAuthentication;
+use AppZap\PHPFramework\Mvc\View\AbstractView;
 
 abstract class BaseHttpHandler {
 
@@ -11,7 +12,7 @@ abstract class BaseHttpHandler {
   protected $request = null;
 
   /**
-   * @var BaseHttpResponse
+   * @var AbstractView
    */
   protected $response = null;
 
@@ -22,9 +23,9 @@ abstract class BaseHttpHandler {
 
   /**
    * @param BaseHttpRequest $request
-   * @param BaseHttpResponse $response
+   * @param AbstractView $response
    */
-  public function __construct(BaseHttpRequest $request, BaseHttpResponse $response) {
+  public function __construct(BaseHttpRequest $request, AbstractView $response) {
     $this->request = $request;
     $this->response = $response;
   }
