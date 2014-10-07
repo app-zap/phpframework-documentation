@@ -3,6 +3,7 @@ namespace AppZap\PHPFramework\Domain\Repository;
 
 use AppZap\PHPFramework\Domain\Collection\AbstractModelCollection;
 use AppZap\PHPFramework\Domain\Model\AbstractModel;
+use AppZap\PHPFramework\SingletonException;
 use AppZap\PHPFramework\Utility\Nomenclature;
 use AppZap\PHPFramework\Orm\EntityMapper;
 use AppZap\PHPFramework\Persistence\DatabaseConnection;
@@ -47,11 +48,11 @@ abstract class AbstractDomainRepository {
   }
 
   public function __clone() {
-    trigger_error('Cloning ' . __CLASS__ . ' is not allowed.', E_USER_ERROR);
+    throw new SingletonException('Cloning ' . __CLASS__ . ' is not allowed.', 1412682071);
   }
 
   public function __wakeup() {
-    trigger_error('Unserializing ' . __CLASS__ . ' is not allowed.', E_USER_ERROR);
+    throw new SingletonException('Unserializing ' . __CLASS__ . ' is not allowed.', 1412682075);
   }
 
   /**

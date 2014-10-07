@@ -27,11 +27,11 @@ trait Singleton {
   }
 
   public function __clone() {
-    trigger_error('Cloning ' . __CLASS__ . ' is not allowed.', E_USER_ERROR);
+    throw new SingletonException('Cloning ' . __CLASS__ . ' is not allowed.', 1412682006);
   }
 
   public function __wakeup() {
-    trigger_error('Unserializing ' . __CLASS__ . ' is not allowed.', E_USER_ERROR);
+    throw new SingletonException('Unserializing ' . __CLASS__ . ' is not allowed.', 1412682032);
   }
 
 }

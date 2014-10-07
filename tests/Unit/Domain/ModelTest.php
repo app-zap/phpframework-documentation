@@ -24,8 +24,6 @@ class MyModel extends AbstractModel {
     $this->title = $title;
   }
 
-
-
 }
 
 class ModelTest extends \PHPUnit_Framework_TestCase {
