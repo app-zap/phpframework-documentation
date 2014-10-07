@@ -2,6 +2,7 @@
 namespace AppZap\PHPFramework\Tests\Unit\Domain\Repositories;
 
 use AppZap\PHPFramework\Configuration\Configuration;
+use AppZap\PHPFramework\Domain\Collection\GenericModelCollection;
 use AppZap\PHPFramework\Domain\Model\AbstractModel;
 use AppZap\PHPFramework\Domain\Repository\AbstractDomainRepository;
 
@@ -97,6 +98,12 @@ class AbstractDomainRepositoryTest extends \PHPUnit_Framework_TestCase {
     $this->repository->__wakeup();
   }
 
-
+  /**
+   * @test
+   */
+  public function findAll() {
+    $items = $this->repository->find_all();
+    $this->assertTrue($items instanceof GenericModelCollection);
+  }
 
 }
