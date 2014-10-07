@@ -43,6 +43,17 @@ abstract class BaseHttpHandler {
    * @throws \Exception
    */
   public function handle_not_supported_method() {
+    HttpStatus::set_status(HttpStatus::STATUS_405_METHOD_NOT_ALLOWED, [
+        HttpStatus::HEADER_FIELD_ALLOW => join(', ', $this->get_implemented_methods())
+    ]);
+    HttpStatus::send_headers();
+    die();
+  }
+
+  /**
+   * @return array
+   */
+  protected function get_implemented_methods() {
     $methods = ['options', 'get', 'head', 'post', 'put', 'delete'];
     $implemented_methods = [];
     foreach($methods as $method) {
@@ -50,11 +61,7 @@ abstract class BaseHttpHandler {
         $implemented_methods[] = $method;
       }
     }
-    HttpStatus::set_status(HttpStatus::STATUS_405_METHOD_NOT_ALLOWED, [
-        HttpStatus::HEADER_FIELD_ALLOW => join(', ', $implemented_methods)
-    ]);
-    HttpStatus::send_headers();
-    die();
+    return $implemented_methods;
   }
 
 }
