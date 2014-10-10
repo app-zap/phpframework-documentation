@@ -1,6 +1,7 @@
 <?php
 namespace AppZap\PHPFramework\Tests\Unit\Mvc;
 
+use AppZap\PHPFramework\Configuration\Configuration;
 use AppZap\PHPFramework\Mvc\BaseHttpResponse;
 
 class BaseHttpResponseTest extends \PHPUnit_Framework_TestCase {
@@ -11,6 +12,7 @@ class BaseHttpResponseTest extends \PHPUnit_Framework_TestCase {
   protected $reponse;
 
   public function setUp() {
+    Configuration::set('application', 'templates_directory', dirname(__FILE__) . '/_templates');
     $this->reponse = new BaseHttpResponse();
   }
 
