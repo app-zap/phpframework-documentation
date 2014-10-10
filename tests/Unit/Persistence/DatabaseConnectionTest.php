@@ -232,7 +232,7 @@ class DatabaseConnectionTest extends \PHPUnit_Extensions_Database_TestCase {
    * @test
    */
   public function where_like_multiple() {
-    $this->markTestIncomplete('This test has not been implemented yet.');
+    $this->fixture->delete('item');
     $insert1 = $this->fixture->insert('item', ['title' => 'wherelikemultipletest###']);
     $insert2 = $this->fixture->insert('item', ['title' => '###wheremultipleliketest']);
     $rows = $this->fixture->select('item', '*', ['title?' => ['wherelikemultipletest%', '%wheremultipleliketest']], 'id DESC');
@@ -244,15 +244,26 @@ class DatabaseConnectionTest extends \PHPUnit_Extensions_Database_TestCase {
   /**
    * @test
    */
+  public function empty_where() {
+    $this->fixture->delete('item');
+    $this->fixture->insert('item', ['title' => 'foo']);
+    $this->fixture->insert('item', ['title' => 'bar']);
+    $this->assertSame(2, $this->fixture->count('item'));
+    $this->assertSame(2, $this->fixture->count('item', []));
+  }
+
+  /**
+   * @test
+   */
   public function delete() {
     $this->fixture->insert('item', ['title' => '1']);
     $this->fixture->insert('item', ['title' => '2']);
     $todelete = $this->fixture->insert('item', ['title' => '3']);
     $count = $this->fixture->count('item');
     $this->fixture->delete('item', ['id' => $todelete]);
-    $this->assertEquals($count-1, $this->fixture->count('item'));
+    $this->assertSame($count-1, $this->fixture->count('item'));
     $this->fixture->delete('item');
-    $this->assertEquals(0, $this->fixture->count('item'));
+    $this->assertSame(0, $this->fixture->count('item'));
   }
 
   /**

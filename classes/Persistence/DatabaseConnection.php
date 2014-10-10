@@ -8,6 +8,10 @@ use AppZap\PHPFramework\Configuration\Configuration;
  */
 class DatabaseConnection {
 
+  const QUERY_MODE_LIKE = 1;
+  const QUERY_MODE_NOT = 2;
+  const QUERY_MODE_REGULAR = 3;
+
   /**
    * @var \PDO
    */
@@ -230,7 +234,7 @@ class DatabaseConnection {
    */
   public function count($table, $where = NULL) {
     $result = $this->row($table, 'count(1)', $where);
-    return ($result) ? $result['count(1)'] : 0;
+    return ($result) ? (int) $result['count(1)'] : 0;
   }
 
   /**
@@ -318,27 +322,73 @@ class DatabaseConnection {
       return '';
     }
 
-    $output = [];
+    $constraints = [];
     foreach ($where AS $field => $value) {
-      $operand = '=';
-      $operand2 = 'IN';
-      if (substr($field, -1) === '!') {
-        $operand = '!=';
-        $operand2 = 'NOT IN';
-        $field = substr($field, 0, -1);
-      } else if (substr($field, -1) == '?') {
-        $operand = 'LIKE';
-        $field = substr($field, 0, -1);
+
+      // the last character of the field can modify the query mode:
+      switch(substr($field, -1)) {
+        case '!':
+          $query_mode = self::QUERY_MODE_NOT;
+          $field = substr($field, 0, -1);
+          break;
+        case '?':
+          $query_mode = self::QUERY_MODE_LIKE;
+          $field = substr($field, 0, -1);
+          break;
+        default:
+          $query_mode = self::QUERY_MODE_REGULAR;
       }
 
-      if (is_array($value)) {
+      if ($query_mode === self::QUERY_MODE_LIKE && is_array($value)) {
+        // LIKE and multiple values needs a special syntax in SQL
         $value = array_map([$this, 'escape'], $value);
-        $output[] = '`' . $field . '`' . ' ' . $operand2 . ' (' . implode(', ', $value) . ')';
+        $constraints[] = '(`' . $field . '` LIKE ' . implode(' OR `' . $field . '` LIKE ', $value) . ')';
       } else {
-        $output[] = '`' . $field . '`' . ' ' . $operand . ' ' . $this->escape($value);
+        if (is_array($value)) {
+          $constraints[] = $this->where_multiple_values($value, $query_mode, $field);
+        } else {
+          $constraints[] = $this->where_single_value($value, $query_mode, $field);
+        }
       }
     }
-    return ' WHERE ' . implode(' ' . $method . ' ', $output);
+    return ' WHERE ' . implode(' ' . $method . ' ', $constraints);
+  }
+
+  /**
+   * @param $value
+   * @param $query_mode
+   * @param $field
+   * @return array
+   */
+  protected function where_multiple_values($value, $query_mode, $field) {
+    $value = implode(', ', array_map([$this, 'escape'], $value));
+    if ($query_mode === self::QUERY_MODE_NOT) {
+      $operand = 'NOT IN';
+    } else {
+      $operand = 'IN';
+    }
+    return sprintf('`%s` %s (%s)', $field, $operand, $value);
+  }
+
+  /**
+   * @param $value
+   * @param $query_mode
+   * @param $field
+   * @return array
+   */
+  protected function where_single_value($value, $query_mode, $field) {
+    $value = $this->escape($value);
+    switch ($query_mode) {
+      case self::QUERY_MODE_LIKE:
+        $operand = 'LIKE';
+        break;
+      case self::QUERY_MODE_NOT:
+        $operand = '!=';
+        break;
+      default:
+        $operand = '=';
+    }
+    return sprintf('`%s` %s %s', $field, $operand, $value);
   }
 
 }
