@@ -1,25 +1,35 @@
 # PHPFramework fork
 This framework is a fork of [Luzifer's PHPFramework](https://github.com/Luzifer/PHPFramework/).<br>
-In the fork we're introducing PHP namespaces for better autoloading, make it ready to be used with composer and add and improve some features.
+Since the fork wide parts of the system were rewritten or heavily modified. Here's a (not neccessarily complete) overview of the difference to the original PHPFramework:
+
+* PHP namespaces for [PSR-4](http://www.php-fig.org/psr/psr-4/) autoloading (the former autoloader has been removed)
+* Built as [composer](https://getcomposer.org/) package.
+* New static classes to access the configuration and database connection everywhere
+* Cache built upon [Nette Caching](https://github.com/nette/caching)
+* Support for Domain Driven Design, including Domain Model Objects, Repositories, Collections and an [ORM](https://en.wikipedia.org/wiki/Object-relational_mapping) mechanism.
+
+The fork is not compatible to the original framework and not compatible to its own previous versions.
+After the next release (2.0) we'll switch to a more backwards compatible development.
 
 # Requirements
 
-Currently the best supported setup (as we use it for development) for this framework is this:
+Currently the best supported setup for this framework is:
 
-- Debian / Ubuntu Linux *(Most recent LTS Ubuntu is running on the dev server.)*
+- Debian / Ubuntu Linux
 - PHP 5.4.0 or greater
 - Apache 2.2 with PHP running with mod\_php and mod\_rewrite enabled *(PHP over CGI should also work)*
 - MySQL 5.1 *(but 5.0 or even 4.x should work as well)*
 
-# Quickstart
-## via composer (recommended)
+# Setup
+
+The PHPFramework is designed to work with [composer](https://getcomposer.org/).
 
 Your project `composer.json` file might look like this:
 
     {
       "name": "vendor/myproject",
       "require": {
-        "smichaelsen/phpframework": "dev-develop",
+        "appzap/phpframework": "dev-develop",
       },
       "autoload": {
         "psr-4": {
@@ -30,12 +40,22 @@ Your project `composer.json` file might look like this:
 
 1. Set up your project with `$ composer update`
 1. create a sub directory for your application, e.g. `myproject`
+1. Copy the `index.php.example` from the PHPFramework folder (should be `vendor/appzap/phpframework`) to your root level as `index.php`. Set `$application` to the name of the directory you just created.
 
-Inside this directory you should use this structure:
+Inside your application directory use this structure:
 
-* `_sql/` - If you want to use the SimpleMigrator, create this folder and put your sql files here
 * `classes/` - Starting point for your [PSR-4](http://www.php-fig.org/psr/psr-4/) autoloadable classes
 * `templates/` - Your [twig](http://twig.sensiolabs.org/) templates
-* `routes.php` - Define a `$routes` array with regular expression routes mapping to handler class names
-* `settings.ini` - Your configuration
-* `settings_local.ini` - Optionally overwrite your configuration
+* `routes.php` - Returns an array with regular expression routes mapping to handler class names
+
+# Configuration
+The PHPFramework supports configuration via ini files. Create the file `settings.ini` in your application directory to set options for the framework or your application.
+These options can be overridden with a `settings_local.ini`.
+
+Whereever you need to access the Configuration put
+
+    use AppZap\PHPFramework\Configuration\Configuration;
+
+on top of the file and use `Configuration::get()` or `Configuration::getSection()` in your code.
+
+[![Build Status](https://travis-ci.org/app-zap/PHPFramework.svg?branch=develop)](https://travis-ci.org/app-zap/PHPFramework)

@@ -1,21 +1,42 @@
 <?php
 namespace AppZap\PHPFramework\Domain\Repository;
 
+use AppZap\PHPFramework\Domain\Collection\AbstractModelCollection;
 use AppZap\PHPFramework\Domain\Model\AbstractModel;
-use AppZap\PHPFramework\Persistence\MySQL;
-use AppZap\PHPFramework\Persistence\StaticMySQL;
 use AppZap\PHPFramework\Singleton;
+use AppZap\PHPFramework\Utility\Nomenclature;
+use AppZap\PHPFramework\Orm\EntityMapper;
+use AppZap\PHPFramework\Persistence\DatabaseConnection;
+use AppZap\PHPFramework\Persistence\StaticDatabaseConnection;
 
 abstract class AbstractDomainRepository {
-use Singleton;
+  use Singleton;
 
   /**
-   * @var MySQL
+   * @var EntityMapper
+   */
+  protected $entity_mapper;
+
+  /**
+   * @var AbstractModelCollection
+   */
+  protected $known_items;
+
+  /**
+   * @var string
+   */
+  protected $tablename;
+
+  /**
+   * @var DatabaseConnection
    */
   protected $db;
 
   public function __construct() {
-    $this->db = StaticMySQL::getInstance();
+    $this->db = StaticDatabaseConnection::getInstance();
+    $this->known_items = $this->get_new_collection();
+    $this->entity_mapper = EntityMapper::get_instance();
+    $this->tablename = Nomenclature::repositoryclassname_to_tablename(get_called_class());
   }
 
   /**
@@ -23,82 +44,107 @@ use Singleton;
    * @return AbstractModel
    */
   public function find_by_id($id) {
-    $table = $this->determine_tablename();
-    return $this->record_to_object($this->db->row($table, '*', ['id' => (int) $id]));
+    $item = $this->known_items->get_by_id($id);
+    if (is_null($item)) {
+      $model = $this->create_identity_model($id);
+      $item = $this->entity_mapper->record_to_object($this->db->row($this->tablename, '*', ['id' => (int)$id]), $model);
+      $this->known_items->set_item($item);
+    }
+    return $item;
+  }
+
+  /**
+   * @return AbstractModelCollection
+   */
+  public function find_all() {
+    return $this->query_many();
   }
 
   /**
    * @param AbstractModel $object
    */
   public function save(AbstractModel $object) {
-    $table = $this->determine_tablename();
-    $record = $this->object_to_record($object);
+    $record = $this->entity_mapper->object_to_record($object);
     if ($record['id']) {
-      $this->db->update($table, $record, 'id = ' . (int) $record['id']);
+      $where = ['id' => (int)$record['id']];
+      $this->db->update($this->tablename, $record, $where);
     } else {
-      $insert_id = $this->db->insert($table, $record);
+      $insert_id = $this->db->insert($this->tablename, $record);
       $object->set_id($insert_id);
     }
   }
 
   /**
-   * @param array $record
+   * @param array $where
+   * @return AbstractModel
+   */
+  protected function query_one($where = NULL) {
+    return $this->record_to_object($this->db->row($this->tablename, '*', $this->scalarize_where($where)));
+  }
+
+  /**
+   * @param array $where
+   * @return AbstractModelCollection
+   */
+  protected function query_many($where = NULL) {
+    $collection = $this->get_new_collection();
+    $records = $this->db->select($this->tablename, '*', $this->scalarize_where($where));
+    foreach ($records as $record) {
+      $collection->set_item($this->record_to_object($record));
+    }
+    return $collection;
+  }
+
+  /**
+   * @param array $where
+   */
+  protected function scalarize_where($where) {
+    if (is_array($where)) {
+      foreach ($where as $property => $value) {
+        $where[$property] = $this->entity_mapper->scalarize_value($value);
+      }
+    }
+    return $where;
+  }
+
+  /**
+   * @return \AppZap\PHPFramework\Domain\Collection\AbstractModelCollection
+   */
+  protected function get_new_collection() {
+    $collection_classname = Nomenclature::repositoryclassname_to_collectionclassname(get_called_class());
+    if (!class_exists($collection_classname)) {
+      $collection_classname = 'AppZap\\PHPFramework\\Domain\\Collection\\GenericModelCollection';
+    }
+    return new $collection_classname;
+  }
+
+  /**
+   * @param $record
    * @return AbstractModel
    */
   protected function record_to_object($record) {
-    if (!is_array($record)) {
-      return NULL;
-    }
-    $model_classname = $this->determine_model_classname();
-    $object = new $model_classname();
-    foreach ($record as $key => $value) {
-      $setter = 'set_' . $key;
-      if (method_exists($object, $setter)) {
-        call_user_func(array($object, $setter), $value);
-      }
-    }
-    return $object;
+    return $this->entity_mapper->record_to_object($record, $this->create_empty_model());
   }
 
   /**
-   * @param AbstractModel $object
-   * @return array
+   * @return AbstractModel
    */
-  protected function object_to_record(AbstractModel $object) {
-    $record = [];
-    foreach (get_class_methods($object) as $method_name) {
-      if (substr($method_name, 0, 4) == 'get_') {
-        $field_name = substr($method_name, 4);
-        $value = call_user_func(array($object, $method_name));
-        if ($value instanceof AbstractModel) {
-          $value = $value->get_id();
-        } elseif ($value instanceof \DateTime) {
-          $value = $value->getTimestamp();
-        }
-        $record[$field_name] = $value;
-      }
-    }
-    return $record;
+  protected function create_empty_model() {
+    $model_classname = Nomenclature::repositoryclassname_to_modelclassname(get_called_class());
+    /** @var AbstractModel $model */
+    $model = new $model_classname();
+    return $model;
   }
 
   /**
-   * @return string
+   * @param int $id
+   * @return AbstractModel
    */
-  protected function determine_tablename() {
-    $called_repository_classname = get_called_class();
-    $classname_without_namespace = array_pop(explode('\\', $called_repository_classname));
-    $tablename = strtolower(substr($classname_without_namespace, 0, -strlen('Repository')));
-    return $tablename;
-  }
-
-  /**
-   * return string
-   */
-  protected function determine_model_classname() {
-    $called_repository_classname = get_called_class();
-    $model_classname = str_replace('Repository', 'Model', $called_repository_classname);
-    $model_classname = substr($model_classname, 0, -strlen('Model'));
-    return $model_classname;
+  protected function create_identity_model($id) {
+    $model = $this->create_empty_model();
+    $model->set_id($id);
+    $this->known_items->set_item($model);
+    return $model;
   }
 
 }

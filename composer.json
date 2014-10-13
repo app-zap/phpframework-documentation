@@ -1,14 +1,16 @@
 {
-  "name": "smichaelsen/phpframework",
+  "name": "app-zap/phpframework",
   "require": {
+    "airbrake/airbrake-php": "dev-master",
+    "nette/caching": "2.2.*",
+    "phpunit/dbunit": "1.3.*",
     "twig/twig": "1.15.*"
   },
   "autoload": {
     "psr-4": {
-      "AppZap\\PHPFramework\\": "classes/"
-    },
-    "files": [
-      "classes/BaseAutoloader.php"
-    ]
+      "AppZap\\PHPFramework\\": "classes/",
+      "AppZap\\PHPFramework\\Tests\\": "tests/",
+      "AppZap\\PHPFramework\\Tests\\Functional\\Testapp\\": "tests/Functional/testapp/classes/"
+    }
   }
 }
