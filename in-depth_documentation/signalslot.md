@@ -13,7 +13,7 @@ If you're familiar with Javascript, this is comparable to the Event model there.
 Search the code for calls to `SignalSlotDispatcher::emitSignal()` to find the available signals. To listen to a certain signal you need to register a slot using `SignalSlotDispatcher::registerSlot()`. Most likely you want to do that in your *PluginLoader*.
 
 ### On parameters
-Notice that the slot should have as many parameters as the emitSignal call - minus 1 (the `$signalName`). So if emitSignal is called with 3 parameters, you slot should have 2.
+Notice that the slot should have as many parameters as the emitSignal call - minus 1 (the `$signalName`). So if emitSignal is called with 3 parameters, your slot should have 2.
 
 The first signal parameter (after `$signalName` is always passed by reference).
 
