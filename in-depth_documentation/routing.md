@@ -20,6 +20,8 @@ The Router (`\AppZap\PHPFramework\Mvc\Router`) will check if the current url mat
 
 The controller method that is called depends on the HTTP Request method. e.g. a GET Request results in the `get()` method being called.
 
+If the request come from the command line `cli()` will be called.
+
 ## callable routing
 
 Instead of providing a controller class name, you can also directly provide a [callable](http://de2.php.net/manual/de/function.is-callable.php), e.g. an anonymous function.
