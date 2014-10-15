@@ -14,7 +14,7 @@ The *release attempt* should not be relevant to you. If the release process goes
 
 Starting with version 2.0 the following rules apply:
 
-* A new major release includes breaking changes. That means your code might break if you upgrade the framework. The release notes of each major version includes instructions for migrating your code.
+* A new major release includes breaking changes. That means your code might break if you upgrade the framework. The release notes of each major version include instructions for migrating your code.
 * A new minor release is fully compatible to the previous minor release - you should be able to upgrade without troubles (exception: if you were relying on a bug).
 
 ## Check for the version
