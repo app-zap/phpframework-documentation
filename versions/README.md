@@ -19,7 +19,7 @@ Starting with version 2.0 the following rules apply:
 
 ## Check for the version
 
-`\AppZap\PHPFramework\Tests\Unit\Utility\VersionTest``
+`\AppZap\PHPFramework\Utility\Version`
 
 | method | description |
 | ------ | ----------- |

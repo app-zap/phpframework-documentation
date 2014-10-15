@@ -25,7 +25,7 @@ The [PlaceImg](https://github.com/app-zap/PHPFrameworkPlaceImg) package is a sim
 
 * `\AppZap\PHPFramework\Mvc\AbstractController::SIGNAL_INIT_REQUEST`
 * `\AppZap\PHPFramework\Mvc\AbstractController::SIGNAL_INIT_RESPONSE`
-* `\AppZap\PHPFramework\Mvc\Dispatcher::SIGNAL_OUTPUT_READY
+* `\AppZap\PHPFramework\Mvc\Dispatcher::SIGNAL_OUTPUT_READY`
 
 ## The signal I need is not there
 
