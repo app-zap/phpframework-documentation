@@ -55,4 +55,8 @@ Line 11 reads the `server_url` from the section `application` and assigns it to 
 
 ## Available configuration settings
 
-*to be done..*
+### Section `phpframework`
+| option | default | description |
+| ------ | ------- | ----------- |
+| powered_by | true | Adds a HTML comment to the output with a hint to PHPFramework |
+
