@@ -5,6 +5,7 @@
 * [Quickstart](quickstart/README.md)
 * [In-depth documentation](in-depth_documentation/README.md)
    * [Application](in-depth_documentation/application.md)
+   * [Routing](in-depth_documentation/routing.md)
    * [Configuration](in-depth_documentation/configuration.md)
    * [Package](in-depth_documentation/package.md)
    * [Signal/Slot](in-depth_documentation/signalslot.md)
