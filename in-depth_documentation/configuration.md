@@ -45,7 +45,7 @@ Line 11 reads the `server_url` from the section `application` and assigns it to 
 `\AppZap\PHPFramework\Configuration\Configuration`:
 
 | name | description |
-| -- | -- |
+| ---- | ----------- |
 | `get($section, $key, $default_value = NULL)` | Get a single value `$key` from the section `$section`. If the value is not found, return `$default_value`.|
 | `getSection($section)` | Returns an array with all keys and values of `$section`. `NULL` if the section is not found.
 | `set($section, $key, $value)` | Set a new `$value` with `$key` in `$section`. This overwrites values from your ini files.
