@@ -1,3 +1,4 @@
 {
-    "plugins": ["math"]
+    "plugins": [],
+    "pluginsConfig": {}
 }

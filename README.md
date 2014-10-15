@@ -1,6 +1,5 @@
-# My Book
+# PHPFramework Documentation
 
-When $$a \ne 0$$, there are two solutions to $$(ax^2 + bx + c = 0)$$ and they are
-$$x = {-c \pm \sqrt{b^2-4ac} \over 2a}.$$
+This documentation refers to version 1.3 of [our fork](https://github.com/app-zap/PHPFramework) of the [PHPFramework](https://github.com/Luzifer/PHPFramework) which was developed by Knut Ahlers.
 
-
+Don't worry, there will be a new name soon to get rid of this confusion.
