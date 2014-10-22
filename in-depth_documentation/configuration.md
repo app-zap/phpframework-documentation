@@ -58,6 +58,6 @@ Line 11 reads the `server_url` from the section `application` and assigns it to 
 ### Section `phpframework`
 | option | default | description |
 | ------ | ------- | ----------- |
-| plugins.*&lt;ARRAY&gt;* | | The keys are the PHP namespaces of the plugins that you are using in your instalation and the value is `1`if you want to activate it. Example:<br>`plugins.MyVendor\MyPackage\FirstPlugin = 1`<br>`plugins.MyVendor\MyPackage\SecondPlugin = 0`<br>Will result in the first plugin being loaded and the second not. You can get the Plugin namespaces from the README files of the plugin packages you're using (hopefully). |
+| plugins.*&lt;ARRAY&gt;* | | The keys are the PHP namespaces of the plugins that you are using in your installation and the value is `1`if you want to activate it. Example:<br>`plugins.MyVendor\MyPackage\FirstPlugin = 1`<br>`plugins.MyVendor\MyPackage\SecondPlugin = 0`<br>Will result in the first plugin being loaded and the second not. You can get the Plugin namespaces from the README files of the plugin packages you're using (hopefully). |
 | powered_by | true | Adds a HTML comment to the output with a hint to PHPFramework |
 
