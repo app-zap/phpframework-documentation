@@ -55,9 +55,29 @@ Line 11 reads the `server_url` from the section `application` and assigns it to 
 
 ## Available configuration settings
 
+### Section `application`
+| option | default | description |
+| ------ | ------- | ----------- |
+| application | *application* | Name of your application. It's automatically set to the name you passed to `Bootstrap::bootstrap()` in your `index.php` |
+| application_directory | *application_directory* | Root directory for your application. It's automatically set to the project root plus your application name. E.g. `/var/www/myapplication/`. |
+| migration_directory | *application_directory*/_sql/ | Directory for your migration files if you want to use the DB migrator. |
+| routes_file | *application_directory*/routes.php | Path to your application's routes file. |
+| templates_directory | *application_directory*/templates/ |  Root directory for your application's templates |
+
 ### Section `phpframework`
 | option | default | description |
 | ------ | ------- | ----------- |
+| airbrake.api_key | | API Key for airbrake |
+| airbrake.enable | false | Enables exception logging with airbrake |
+| airbrake.environment | NO_ENVIRONMENT_SET | Should be set to distiguish different environments. E.g. `dev`, `staging`, `live` |
+| airbrake.host | | URL of your airbrake host |
+| airbrake.resource | | Resource to call to log exceptions |
+| authentication.cookie.name | `SecureSessionCookie` | Name of the PHPFramework secure cookie |
+| authentication.cookie.encrypt_key | | Set to a random string if you want to use the PHPFramework secure cookie |
+| authentication.http.*&lt;ARRAY&gt;* | | The keys are the the usernames, the values are the sha1 hashes of the passwords to authenticate via HTTP.<br>HTTP authentication must be enables per controller class, by setting `$this->require_http_authentication = TRUE` in it's constructor. |
+| authentication.sessionclass | `BasePHPSession` | Class for session handling. For all built-in session classes in PHPFramework you can omit the namespace `AppZap\PHPFramework\Authentication`.
+| db.migrator.enable | false | If true the DB migrator is invoked on every page call |
+| debug_mode | false | Enables PHP error_reporting `E_ALL` and should also be used by your application to decide wether to output debugging information |
 | plugins.*&lt;ARRAY&gt;* | | The keys are the PHP namespaces of the plugins that you are using in your installation and the value is `1`if you want to activate it. Example:<br>`plugins.MyVendor\MyPackage\FirstPlugin = 1`<br>`plugins.MyVendor\MyPackage\SecondPlugin = 0`<br>Will result in the first plugin being loaded and the second not. You can get the Plugin namespaces from the README files of the plugin packages you're using (hopefully). |
 | powered_by | true | Adds a HTML comment to the output with a hint to PHPFramework |
-
+| version | *version* | Is automatically set to the current 2-digit version of PHPFramework, e.g. `1.3`. |
