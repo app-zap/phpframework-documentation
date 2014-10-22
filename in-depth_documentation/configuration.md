@@ -74,10 +74,21 @@ Line 11 reads the `server_url` from the section `application` and assigns it to 
 | airbrake.resource | | Resource to call to log exceptions |
 | authentication.cookie.name | `SecureSessionCookie` | Name of the PHPFramework secure cookie |
 | authentication.cookie.encrypt_key | | Set to a random string if you want to use the PHPFramework secure cookie |
-| authentication.http.*&lt;ARRAY&gt;* | | The keys are the the usernames, the values are the sha1 hashes of the passwords to authenticate via HTTP.<br>HTTP authentication must be enables per controller class, by setting `$this->require_http_authentication = TRUE` in it's constructor. |
-| authentication.sessionclass | `BasePHPSession` | Class for session handling. For all built-in session classes in PHPFramework you can omit the namespace `AppZap\PHPFramework\Authentication`.
+| authentication.http.*&lt;ARRAY&gt;* | | The keys are the the usernames, the values are the sha1 hashes of the passwords to authenticate via HTTP.<br>HTTP authentication must be enabled per controller class, by setting `$this->require_http_authentication = TRUE` in it's constructor. |
+| authentication.sessionclass | `BasePHPSession` | Class for session handling. For all built-in session classes in PHPFramework you can omit the namespace `AppZap\PHPFramework\Authentication`. |
+| cache.enable | false | Enables caching globally |
+| cache.folder | `./cache/` | Directory for cache files. Must be writable. |
+| cache.full_output | false | Enables full output caching. That means the rendered output for each url will be cached. |
+| cache.full_output_expiration | `20 minutes` | Expiration duration for the full output cache |
+| cache.twig_folder | `./cache/twig/` | Directory for twig cache files. Must be writable |
+| db.charset | | MySQL charset |
+| db.mysql.database | | MySQL database name |
+| db.mysql.host | | MySQL host |
+| db.mysql.password | | MySQL password |
+| db.mysql.user | | MySQL user |
 | db.migrator.enable | false | If true the DB migrator is invoked on every page call |
 | debug_mode | false | Enables PHP error_reporting `E_ALL` and should also be used by your application to decide wether to output debugging information |
 | plugins.*&lt;ARRAY&gt;* | | The keys are the PHP namespaces of the plugins that you are using in your installation and the value is `1`if you want to activate it. Example:<br>`plugins.MyVendor\MyPackage\FirstPlugin = 1`<br>`plugins.MyVendor\MyPackage\SecondPlugin = 0`<br>Will result in the first plugin being loaded and the second not. You can get the Plugin namespaces from the README files of the plugin packages you're using (hopefully). |
 | powered_by | true | Adds a HTML comment to the output with a hint to PHPFramework |
+| template_file_extension | `.twig` / `.html` | By default PHPFramwork uses the `TwigView` to render templates. Then `.twig` will be the default template file extension.<br>If you use your own view class based on `AbstractView` then `.html` will be the default template file extension. |
 | version | *version* | Is automatically set to the current 2-digit version of PHPFramework, e.g. `1.3`. |
