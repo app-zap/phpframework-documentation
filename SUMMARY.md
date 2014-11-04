@@ -11,5 +11,6 @@
    * [Signal/Slot](in-depth_documentation/signalslot.md)
    * [Plugin](in-depth_documentation/plugin.md)
    * [Domain Driven Design and ORM](in-depth_documentation/domain_driven_design_and_orm.md)
+   * [DatabaseMigrator](in-depth_documentation/databasemigrator.md)
 * [Versions](versions/README.md)
 
