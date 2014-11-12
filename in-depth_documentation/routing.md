@@ -22,6 +22,10 @@ The controller method that is called depends on the HTTP Request method. e.g. a 
 
 If the request come from the command line `cli()` will be called.
 
+## parameters
+
+*todo..*
+
 ## callable routing
 
 Instead of providing a controller class name, you can also directly provide a [callable](http://de2.php.net/manual/de/function.is-callable.php), e.g. an anonymous function.
@@ -33,7 +37,3 @@ Instead of providing a controller class name, you can also directly provide a [c
     return [
     	'|/is/phpframework/awesome/$|' => function() { return 'yes!' },
     ];
-
-## parameters
-
-*todo..*
