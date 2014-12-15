@@ -88,6 +88,7 @@ Line 11 reads the `server_url` from the section `application` and assigns it to 
 | db.mysql.user | | MySQL user |
 | db.migrator.enable | false | If true the DB migrator is invoked on every page call |
 | debug_mode | false | Enables PHP error_reporting `E_ALL` and should also be used by your application to decide wether to output debugging information |
+| echo_output | true | Set to *false* if you don't want to echo the output. In any case you'll get back the output from the `\AppZap\PHPFramework\Bootstrap::bootstrap()` method in your `index.php`|
 | plugins.*&lt;ARRAY&gt;* | | The keys are the PHP namespaces of the plugins that you are using in your installation and the value is `1`if you want to activate it. Example:<br>`plugins.MyVendor\MyPackage\FirstPlugin = 1`<br>`plugins.MyVendor\MyPackage\SecondPlugin = 0`<br>Will result in the first plugin being loaded and the second not. You can get the Plugin namespaces from the README files of the plugin packages you're using (hopefully). |
 | powered_by | true | Adds a HTML comment to the output with a hint to PHPFramework |
 | template_file_extension | `.twig` / `.html` | By default PHPFramwork uses the `TwigView` to render templates. Then `.twig` will be the default template file extension.<br>If you use your own view class based on `AbstractView` then `.html` will be the default template file extension. |

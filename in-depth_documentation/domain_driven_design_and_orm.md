@@ -1,1 +1,1 @@
-# Domain Driven Design and ORM
+# DDD (Domain Driven Design)
