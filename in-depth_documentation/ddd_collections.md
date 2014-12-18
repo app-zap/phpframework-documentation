@@ -13,7 +13,7 @@ It has useful methods to operate on its containing models:
 | method | description |
 | ------ | ----------- |
 | `add(AbstractModel $model)` | Adds a model to the collection. *Notice that the objects will be stored by reference (PHP's standard behaviour on passed objects). If you alter your object after storing it in the collection, the stored object is also altered (it is the same object)*. |
-| `remove_item(AbstractModel $model)` | If `$model` is present in the collection, it will be removed from it. |
+| `remove(AbstractModel $model)` | If `$model` is present in the collection, it will be removed from it. |
 | `removeItems(AbstractModelCollection $itemsToRemove)` | Removes the given set of items from the collection |
 | `get_by_id($id)` | Returns the model with the given `$id` or `NULL` if it wasn't found. |
 | `count()` | Returns the amount of contained models |
