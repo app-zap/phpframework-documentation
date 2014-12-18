@@ -47,7 +47,7 @@ Line 11 reads the `server_url` from the section `application` and assigns it to 
 | method | description |
 | ------ | ----------- |
 | `get($section, $key, $default_value = NULL)` | Get a single value `$key` from the section `$section`. If the value is not found, return `$default_value`.|
-| `getSection($section, $namespace = NULL)` | Returns an array with all keys and values of `$section`. `NULL` if the section is not found.<br> With the optional `$namespace` you can narrow the set of found items. E.g. if there are multiple keys starting with `db.` you can provide `db` as `$namespace` (without the dot `.`) and get only the matching keys.
+| `getSection($section, $namespace = NULL, $defaultValues = [])` | Returns an array with all keys and values of `$section`. `NULL` if the section is not found.<br> With the optional `$namespace` you can narrow the set of found items. E.g. if there are multiple keys starting with `db.` you can provide `db` as `$namespace` (without the dot `.`) and get only the matching keys.<br> With `$defaultValues` you can provide an array of default values that is overruled by the actual configuration.
 | `set($section, $key, $value)` | Set a new `$value` with `$key` in `$section`. This overwrites values from your ini files.
 | `remove_key($section, $key)` | Unsets `$key` in `$section` if it is present. |
 | `remove_section($section)` | Unsets `$section` if it is present |
