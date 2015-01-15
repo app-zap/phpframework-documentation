@@ -94,6 +94,7 @@ Line 11 reads the `server_url` from the section `application` and assigns it to 
 | mail.smtp_password | | SMTP password |
 | mail.smtp_port | 465 or 587 | SMTP port. By default will be guessed based on the `mail.smtp_encryption`. |
 | mail.smtp_user | | SMTP username |
+| output_charset | utf-8 | The charset will be set as HTTP header. Set to `false` if you don't want any charset to be set. |
 | plugins.*&lt;ARRAY&gt;* | | The keys are the PHP namespaces of the plugins that you are using in your installation and the value is `1`if you want to activate it. Example:<br>`plugins.MyVendor\MyPackage\FirstPlugin = 1`<br>`plugins.MyVendor\MyPackage\SecondPlugin = 0`<br>Will result in the first plugin being loaded and the second not. You can get the Plugin namespaces from the README files of the plugin packages you're using (hopefully). |
 | powered_by | true | Adds a HTML comment to the output with a hint to PHPFramework |
 | template_file_extension | `.twig` / `.html` | By default PHPFramwork uses the `TwigView` to render templates. Then `.twig` will be the default template file extension.<br>If you use your own view class based on `AbstractView` then `.html` will be the default template file extension. |
