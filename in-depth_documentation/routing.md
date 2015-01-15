@@ -104,3 +104,15 @@ Instead of providing a controller class name, you can also directly provide a [c
     return [
       'is/phpframework/awesome/' => function() { return 'yes!' },
     ];
+
+### PHP 5.5 syntax sugar
+
+If you use PHP 5.5 or higher you are encouraged to use the sweet new `::class` constant for the classnames. This will provide you with autocompletion in your IDE.
+
+`myapp/routes.php`:
+
+    <?php
+      return [
+        'users/' => MyVendor\MyApp\Controller\UserListController::class,
+        '.' => MyVendor\MyApp\Controller\IndexController::class,
+    ];
