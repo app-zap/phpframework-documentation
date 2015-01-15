@@ -72,11 +72,27 @@ If you need more flexibility you can use regular expressions for your route defi
     return [
       '|^trader/(.*)/$|' => 'MyVendor\\MyApp\\Controller\\TraderController',
       '|^ajax/(.*)$|' => 'MyVendor\\MyApp\\Controller\\AjaxController',
-      '||' => 'MyVendor\\MyApp\\Controller\\IndexHandler',
+      '||' => 'MyVendor\\MyApp\\Controller\\IndexController',
     ];
 
 The strings *matched* by the paranthesis of the regular expressions will be passed to the Controller as `$params`.
 
+### subpath routing
+
+If you have several routes starting with the same prefix you can group the in a subpath:
+
+`routes.php`:
+
+    <?php
+
+    return [
+      'profile/%' => [
+        '.' => 'MyVendor\\MyApp\\Controller\\ProfileSummaryController',
+        'edit/' => 'MyVendor\\MyApp\\Controller\\ProfileEditController',
+      ]
+    ];
+
+You can nest subpaths with no limit and you can use parameters on each level.
 
 ### callable routing
 
