@@ -15,7 +15,7 @@ Search the code for calls to `SignalSlotDispatcher::emitSignal()` to find the av
 ### On parameters
 Notice that the slot should have as many parameters as the emitSignal call - minus 1 (the `$signalName`). So if emitSignal is called with 3 parameters, your slot should have 2.
 
-The first signal parameter (after `$signalName` is always passed by reference).
+The first signal parameter (after `$signalName`) is always passed by reference.
 
 ## Example
 
@@ -23,8 +23,10 @@ The [PlaceImg](https://github.com/app-zap/PHPFrameworkPlaceImg) package is a sim
 
 ## List of available signals
 
+* `\AppZap\PHPFramework\Bootstrap::SIGNAL_PLUGINSLOADED`
 * `\AppZap\PHPFramework\Mvc\AbstractController::SIGNAL_INIT_REQUEST`
 * `\AppZap\PHPFramework\Mvc\AbstractController::SIGNAL_INIT_RESPONSE`
+* `\AppZap\PHPFramework\Mvc\Dispatcher::SIGNAL_CONSTRUCT`
 * `\AppZap\PHPFramework\Mvc\Dispatcher::SIGNAL_OUTPUT_READY`
 
 ## The signal I need is not there

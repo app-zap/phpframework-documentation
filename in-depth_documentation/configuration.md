@@ -47,7 +47,7 @@ Line 11 reads the `server_url` from the section `application` and assigns it to 
 | method | description |
 | ------ | ----------- |
 | `get($section, $key, $default_value = NULL)` | Get a single value `$key` from the section `$section`. If the value is not found, return `$default_value`.|
-| `getSection($section, $namespace = NULL)` | Returns an array with all keys and values of `$section`. `NULL` if the section is not found.<br> With the optional `$namespace` you can narrow the set of found items. E.g. if there are multiple keys starting with `db.` you can provide `db` as `$namespace` (without the dot `.`) and get only the matching keys.
+| `getSection($section, $namespace = NULL, $defaultValues = [])` | Returns an array with all keys and values of `$section`. `NULL` if the section is not found.<br> With the optional `$namespace` you can narrow the set of found items. E.g. if there are multiple keys starting with `db.` you can provide `db` as `$namespace` (without the dot `.`) and get only the matching keys.<br> With `$defaultValues` you can provide an array of default values that is overruled by the actual configuration.
 | `set($section, $key, $value)` | Set a new `$value` with `$key` in `$section`. This overwrites values from your ini files.
 | `remove_key($section, $key)` | Unsets `$key` in `$section` if it is present. |
 | `remove_section($section)` | Unsets `$section` if it is present |
@@ -88,7 +88,15 @@ Line 11 reads the `server_url` from the section `application` and assigns it to 
 | db.mysql.user | | MySQL user |
 | db.migrator.enable | false | If true the DB migrator is invoked on every page call |
 | debug_mode | false | Enables PHP error_reporting `E_ALL` and should also be used by your application to decide wether to output debugging information |
+| echo_output | true | Set to *false* if you don't want to echo the output. In any case you'll get back the output from the `\AppZap\PHPFramework\Bootstrap::bootstrap()` method in your `index.php`|
+| mail.smtp_encryption | ssl | SMTP encryption. `ssl`, `tls` and `none` are supported |
+| mail.smtp_host | | Host for SMTP connection to send mails |
+| mail.smtp_password | | SMTP password |
+| mail.smtp_port | 465 or 587 | SMTP port. By default will be guessed based on the `mail.smtp_encryption`. |
+| mail.smtp_user | | SMTP username |
+| output_charset | utf-8 | The charset will be set as HTTP header. Set to `false` if you don't want any charset to be set. |
 | plugins.*&lt;ARRAY&gt;* | | The keys are the PHP namespaces of the plugins that you are using in your installation and the value is `1`if you want to activate it. Example:<br>`plugins.MyVendor\MyPackage\FirstPlugin = 1`<br>`plugins.MyVendor\MyPackage\SecondPlugin = 0`<br>Will result in the first plugin being loaded and the second not. You can get the Plugin namespaces from the README files of the plugin packages you're using (hopefully). |
 | powered_by | true | Adds a HTML comment to the output with a hint to PHPFramework |
 | template_file_extension | `.twig` / `.html` | By default PHPFramwork uses the `TwigView` to render templates. Then `.twig` will be the default template file extension.<br>If you use your own view class based on `AbstractView` then `.html` will be the default template file extension. |
+| uri_path_prefix | | Provide this prefix if your application runs in a subfolder of your host. E.g. for `www.mydomain.tld/path/to/application` set `path/to/application` as `uri_path_prefix`. |
 | version | *version* | Is automatically set to the current 2-digit version of PHPFramework, e.g. `1.3`. |

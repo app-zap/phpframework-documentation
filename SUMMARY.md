@@ -10,6 +10,9 @@
    * [Package](in-depth_documentation/package.md)
    * [Signal/Slot](in-depth_documentation/signalslot.md)
    * [Plugin](in-depth_documentation/plugin.md)
-   * [Domain Driven Design and ORM](in-depth_documentation/domain_driven_design_and_orm.md)
+   * [DDD (Domain Driven Design)](in-depth_documentation/domain_driven_design_and_orm.md)
+   * [DDD: Collections](in-depth_documentation/ddd_collections.md)
+   * [DatabaseMigrator](in-depth_documentation/databasemigrator.md)
+   * [Mailing](in-depth_documentation/mailing.md)
 * [Versions](versions/README.md)
 
