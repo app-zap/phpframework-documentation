@@ -89,6 +89,7 @@ Line 11 reads the `server_url` from the section `application` and assigns it to 
 | db.migrator.enable | false | If true the DB migrator is invoked on every page call |
 | debug_mode | false | Enables PHP error_reporting `E_ALL` and should also be used by your application to decide wether to output debugging information |
 | echo_output | true | Set to *false* if you don't want to echo the output. In any case you'll get back the output from the `\AppZap\PHPFramework\Bootstrap::bootstrap()` method in your `index.php`|
+| mail.method | mail | Set to `smtp` to use an SMTP server instead of PHP's mail() function to send mails. |
 | mail.smtp_encryption | ssl | SMTP encryption. `ssl`, `tls` and `none` are supported |
 | mail.smtp_host | | Host for SMTP connection to send mails |
 | mail.smtp_password | | SMTP password |
